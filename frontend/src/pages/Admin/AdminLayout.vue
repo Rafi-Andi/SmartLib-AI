@@ -1,9 +1,19 @@
-<script setup lang="ts">
+<script setup>
 import router from '@/router'
+
+const token = localStorage.getItem('token')
+const role = localStorage.getItem('role')
+
+if (role === 'admin') {
+  router.push({ name: 'AdminLayout' })
+}
+if (!token) {
+  router.push({ name: 'Login' })
+}
 </script>
 
 <template>
-  <section class="flex min-h-screen text-white bg-[#0a0a0f]">
+  <section class="flex min-h-screen text-white bg-dark">
     <aside class="w-64 bg-dark-card border-r border-dark-border flex flex-col fixed h-full">
       <div class="p-6 border-b border-dark-border">
         <span class="text-xl font-bold text-primary-500">LibSmart</span>

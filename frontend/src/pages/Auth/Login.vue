@@ -1,5 +1,47 @@
 <script setup>
-  
+import api from '@/lib/axios'
+import router from '@/router'
+import { ref } from 'vue'
+
+const formLogin = ref({
+  email: '',
+  password: '',
+})
+const isLoading = ref(false)
+const errorMessages = ref([])
+
+const token = localStorage.getItem('token')
+const role = localStorage.getItem('role')
+
+if (token) {
+  if (role === 'student') {
+    router.push({ name: 'StudentLayout' })
+  } else if (role === 'admin') {
+    router.push({ name: 'AdminLayout' })
+  }
+}
+
+const handleLogin = async () => {
+  try {
+    isLoading.value = true
+    const ress = await api.post('/auth/login', formLogin.value)
+    console.log(ress)
+    localStorage.setItem('token', ress.data.data.token)
+    localStorage.setItem('role', ress.data.data.user.role)
+    if (ress.data.data.user.role === 'admin') {
+      router.push({ name: 'AdminLayout' })
+    } else if (ress.data.data.user.role === 'student') {
+      router.push({ name: 'StudentLayout' })
+    }
+    alert(ress.data.message)
+  } catch (error) {
+    console.log(error)
+    errorMessages.value = error.response.data.errors
+    alert(error.response.data.message)
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -28,7 +70,7 @@
       <div class="bg-dark-card border border-dark-border rounded-2xl p-8 glow">
         <h2 class="text-xl font-bold mb-6 text-center">Masuk ke Akun</h2>
 
-        <form class="space-y-5">
+        <form class="space-y-5" @submit.prevent="handleLogin()">
           <div>
             <label class="block text-sm text-slate-400 mb-2">Email</label>
             <div class="relative">
@@ -46,10 +88,12 @@
                 />
               </svg>
               <input
+                v-model="formLogin.email"
                 type="email"
                 placeholder="admin@sekolah.com"
                 class="w-full pl-12 pr-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
+              <p style="color: red">{{ errorMessages?.email?.[0] }}</p>
             </div>
           </div>
 
@@ -70,19 +114,13 @@
                 />
               </svg>
               <input
+                v-model="formLogin.password"
                 type="password"
                 placeholder="••••••••"
                 class="w-full pl-12 pr-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
+              <p style="color: red">{{ errorMessages?.email?.[0] }}</p>
             </div>
-          </div>
-
-          <div class="flex items-center justify-between text-sm">
-            <label class="flex items-center gap-2 text-slate-400">
-              <input type="checkbox" class="w-4 h-4 rounded border-dark-border bg-dark-bg" />
-              Ingat saya
-            </label>
-            <a href="#" class="text-primary-400 hover:underline">Lupa password?</a>
           </div>
 
           <button
@@ -97,7 +135,7 @@
                 d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
               />
             </svg>
-            Masuk
+            {{ isLoading ? 'Loading..' : 'Masuk' }}
           </button>
         </form>
 

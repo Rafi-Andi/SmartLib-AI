@@ -1,3 +1,19 @@
+<script setup>
+import api from '@/lib/axios'
+import { onMounted, ref } from 'vue'
+
+const dataCategories = ref(null)
+const fetchCategories = async () => {
+  const ress = await api.get('/books-categories')
+  dataCategories.value = ress.data.categories
+}
+
+const activeCategory = ref(null)
+onMounted(() => {
+  fetchCategories()
+})
+</script>
+
 <template>
   <div class="min-h-screen flex flex-col text-white">
     <header class="sticky top-0 z-50 bg-dark-card/90 backdrop-blur-lg border-b border-dark-border">
@@ -57,29 +73,10 @@
             Semua
           </button>
           <button
+
             class="px-4 py-2 bg-dark-bg border border-dark-border text-slate-400 rounded-full text-sm font-medium whitespace-nowrap hover:border-primary-500 hover:text-primary-400 transition-colors"
           >
             Fiksi
-          </button>
-          <button
-            class="px-4 py-2 bg-dark-bg border border-dark-border text-slate-400 rounded-full text-sm font-medium whitespace-nowrap hover:border-primary-500 hover:text-primary-400 transition-colors"
-          >
-            Sains
-          </button>
-          <button
-            class="px-4 py-2 bg-dark-bg border border-dark-border text-slate-400 rounded-full text-sm font-medium whitespace-nowrap hover:border-primary-500 hover:text-primary-400 transition-colors"
-          >
-            Sejarah
-          </button>
-          <button
-            class="px-4 py-2 bg-dark-bg border border-dark-border text-slate-400 rounded-full text-sm font-medium whitespace-nowrap hover:border-primary-500 hover:text-primary-400 transition-colors"
-          >
-            Agama
-          </button>
-          <button
-            class="px-4 py-2 bg-dark-bg border border-dark-border text-slate-400 rounded-full text-sm font-medium whitespace-nowrap hover:border-primary-500 hover:text-primary-400 transition-colors"
-          >
-            Biografi
           </button>
         </div>
       </div>

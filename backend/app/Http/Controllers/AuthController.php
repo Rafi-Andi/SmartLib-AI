@@ -7,7 +7,6 @@ use App\Models\School;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Number;
 
 class AuthController
 {

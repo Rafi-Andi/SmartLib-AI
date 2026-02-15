@@ -1,3 +1,51 @@
+<script setup>
+import api from '@/lib/axios'
+import router from '@/router'
+import { ref } from 'vue'
+
+const formRegister = ref({
+  school_name: '',
+  school_address: '',
+  school_phone: '',
+  school_email: '',
+  admin_name: '',
+  admin_email: '',
+  password: '',
+  confirm_password: '',
+})
+
+const isLoading = ref(false)
+const errorMessages = ref([])
+const handleRegister = async () => {
+  try {
+    isLoading.value = true
+    if (formRegister.value.confirm_password !== formRegister.value.password) {
+      alert('Konfirmasi password tidak valid')
+      return
+    }
+    const ress = await api.post('/auth/register-school', formRegister.value)
+    formRegister.value = {
+      school_name: '',
+      school_address: '',
+      school_phone: '',
+      school_email: '',
+      admin_name: '',
+      admin_email: '',
+      password: '',
+      confirm_password: '',
+    }
+    router.push({name: 'Login'})
+    alert(ress.data.message)
+  } catch (error) {
+    alert(error.response.data.message)
+    errorMessages.value = error.response.data.errors
+    console.log(error)
+  } finally {
+    isLoading.value = false
+  }
+}
+</script>
+
 <template>
   <section class="text-white py-8 px-4">
     <div class="max-w-2xl mx-auto">
@@ -39,7 +87,7 @@
       </div>
 
       <div class="bg-dark-card border border-dark-border rounded-2xl p-8">
-        <form class="space-y-8">
+        <form class="space-y-8" @submit.prevent="handleRegister">
           <div>
             <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
               <span
@@ -53,38 +101,35 @@
               <div>
                 <label class="block text-sm text-slate-400 mb-2">Nama Sekolah *</label>
                 <input
+                  v-model="formRegister.school_name"
                   type="text"
+                  required
                   placeholder="Contoh: SMA Negeri 1 Jakarta"
                   class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
                 />
+                <p style="color: red">{{ errorMessages?.school_name?.[0] }}</p>
               </div>
 
               <div>
                 <label class="block text-sm text-slate-400 mb-2">Alamat</label>
                 <textarea
+                  v-model="formRegister.school_address"
                   placeholder="Alamat lengkap sekolah"
                   rows="2"
                   class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none resize-none"
                 ></textarea>
+                <p style="color: red">{{ errorMessages?.school_address?.[0] }}</p>
               </div>
 
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm text-slate-400 mb-2">Telepon</label>
-                  <input
-                    type="tel"
-                    placeholder="021-12345678"
-                    class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm text-slate-400 mb-2">Website</label>
-                  <input
-                    type="url"
-                    placeholder="www.sekolah.sch.id"
-                    class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
-                  />
-                </div>
+              <div>
+                <label class="block text-sm text-slate-400 mb-2">Telepon</label>
+                <input
+                  v-model="formRegister.school_phone"
+                  type="tel"
+                  placeholder="021-12345678"
+                  class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+                />
+                <p style="color: red">{{ errorMessages?.school_phone?.[0] }}</p>
               </div>
             </div>
           </div>
@@ -102,33 +147,43 @@
               <div>
                 <label class="block text-sm text-slate-400 mb-2">Nama Admin *</label>
                 <input
+                  v-model="formRegister.admin_name"
                   type="text"
+                  required
                   placeholder="Nama petugas perpustakaan"
                   class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
                 />
+                <p style="color: red">{{ errorMessages?.admin_name?.[0] }}</p>
               </div>
 
               <div>
                 <label class="block text-sm text-slate-400 mb-2">Email Admin *</label>
                 <input
+                  required
+                  v-model="formRegister.admin_email"
                   type="email"
                   placeholder="admin@sekolah.sch.id"
                   class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
                 />
+                <p style="color: red">{{ errorMessages?.admin_email?.[0] }}</p>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm text-slate-400 mb-2">Password *</label>
                   <input
+                    required
+                    v-model="formRegister.password"
                     type="password"
                     placeholder="Minimal 6 karakter"
                     class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
                   />
+                  <p style="color: red">{{ errorMessages?.password?.[0] }}</p>
                 </div>
                 <div>
                   <label class="block text-sm text-slate-400 mb-2">Konfirmasi Password *</label>
                   <input
+                    v-model="formRegister.confirm_password"
                     type="password"
                     placeholder="Ulangi password"
                     class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
@@ -140,7 +195,7 @@
 
           <button
             type="submit"
-            class="w-full py-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            class="w-full py-4 cursor-pointer bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -150,7 +205,7 @@
                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
               />
             </svg>
-            Daftarkan Sekolah
+            {{ isLoading ? 'Loading..' : ' Daftarkan Sekolah' }}
           </button>
         </form>
       </div>
