@@ -28,6 +28,7 @@ const handleLogin = async () => {
     console.log(ress)
     localStorage.setItem('token', ress.data.data.token)
     localStorage.setItem('role', ress.data.data.user.role)
+    localStorage.setItem('name', ress.data.data.user.name)
     if (ress.data.data.user.role === 'admin') {
       router.push({ name: 'AdminLayout' })
     } else if (ress.data.data.user.role === 'student') {

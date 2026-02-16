@@ -13,13 +13,14 @@ class BookController
     public function index(Request $request)
     {
         $user = $request->user();
+        $per_page = $request->per_page ?? 8;
         $books = Book::when($request->search, function ($q, $search) {
             $q->where("title", 'like', '%' . $search . '%')->orWhere("author", 'like', '%' . $search . '%')->orWhere("isbn", 'like', '%' . $search . '%');
         })->when($request->category, function ($q, $category) {
             $q->where('category', $category);
         })->when($request->available_only == true, function ($q, $available_only) {
             $q->where("available_count", ">", 0);
-        })->where('school_id', $user->school_id)->paginate(8);
+        })->where('school_id', $user->school_id)->latest()->paginate($per_page);
 
         return response()->json([
             "message" => "Berhasil mengambil data buku",

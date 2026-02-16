@@ -133,6 +133,7 @@ class AuthController
                     "id" => $user->id,
                     "school_id" => $user->school_id,
                     "email" => $user->email,
+                    "name" => $user->name,
                     "role" => $user->role,
                     "nisn" => $user->nisn,
                     "rfid_uid" => $user->rfid_uid,
@@ -177,6 +178,18 @@ class AuthController
                     "kiosk_enabled" => $user->school->kiosk_enabled,
                 ],
             ]
+        ], 200);
+    }
+
+    public function profile(Request $request)
+    {
+        $user = User::withCount(['transactions as totalBorrows', 'transactions as totalBorrowActive' => function($q){
+            $q->where('status', 'borrowed');
+        }])->with('school:id,name')->where('id', $request->user()->id)->first();
+
+        return response()->json([
+            "message" => "Berhasil mengambil profile",
+            "data" => $user
         ], 200);
     }
 }

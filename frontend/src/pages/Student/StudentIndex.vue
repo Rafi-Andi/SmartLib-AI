@@ -1,6 +1,6 @@
 <script setup>
 import api from '@/lib/axios'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const dataCategories = ref(null)
 const fetchCategories = async () => {
@@ -8,10 +8,65 @@ const fetchCategories = async () => {
   dataCategories.value = ress.data.categories
 }
 
-const activeCategory = ref(null)
+const activeCategory = ref('')
+const search = ref('')
+const pageActive = ref(1)
+const lastPage = ref(1)
+const dataBooks = ref(null)
+
+const fetchBooks = async () => {
+  const ress = await api.get('/books', {
+    params: {
+      per_page: 3,
+    },
+  })
+
+  dataBooks.value = ress.data.data.data
+}
+
+const dataAllBooks = ref(null)
+
+const fetchAllBooks = async () => {
+  const ress = await api.get('/books', {
+    params: {
+      per_page: 10,
+      category: activeCategory.value,
+      search: search.value,
+      page: pageActive.value,
+    },
+  })
+
+  dataAllBooks.value = ress.data.data.data
+  lastPage.value = ress.data.data.last_page
+}
+
 onMounted(() => {
   fetchCategories()
+  fetchBooks()
+  fetchAllBooks()
 })
+
+const bookDetail = ref(null)
+
+watch(activeCategory, () => {
+  fetchAllBooks()
+  pageActive.value = 1
+})
+
+let searchBounce = null
+watch(search, () => {
+  if (searchBounce) clearTimeout(searchBounce)
+  searchBounce = setTimeout(() => {
+    fetchAllBooks()
+  }, 500)
+  pageActive.value = 1
+})
+
+watch(pageActive, () => {
+  fetchAllBooks()
+})
+
+const name = localStorage.getItem('name')
 </script>
 
 <template>
@@ -35,11 +90,12 @@ onMounted(() => {
           <span class="font-bold">LibSmart</span>
         </div>
 
-        <div
-          class="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center text-sm font-bold"
+        <router-link
+          :to="{ name: 'StudentProfile' }"
+          class="w-8 h-8 bg-linear-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center text-sm font-bold"
         >
-          B
-        </div>
+          {{ name[0] }}
+        </router-link>
       </div>
 
       <div class="px-4 pb-4">
@@ -58,6 +114,7 @@ onMounted(() => {
             />
           </svg>
           <input
+            v-model="search"
             type="text"
             placeholder="Cari judul, penulis, atau ISBN..."
             class="w-full pl-10 pr-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
@@ -68,15 +125,28 @@ onMounted(() => {
       <div class="px-4 pb-4 overflow-x-auto scrollbar-hide">
         <div class="flex gap-2">
           <button
-            class="px-4 py-2 bg-primary-500 text-white rounded-full text-sm font-medium whitespace-nowrap"
+            @click="activeCategory = ''"
+            :class="
+              activeCategory === ''
+                ? 'bg-primary-500 text-white'
+                : 'bg-dark-bg border border-dark-border text-slate-400'
+            "
+            class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
           >
             Semua
           </button>
           <button
-
-            class="px-4 py-2 bg-dark-bg border border-dark-border text-slate-400 rounded-full text-sm font-medium whitespace-nowrap hover:border-primary-500 hover:text-primary-400 transition-colors"
+            v-for="(item, index) in dataCategories"
+            :key="index"
+            @click="activeCategory = item"
+            :class="
+              activeCategory === item
+                ? 'bg-primary-500 text-white'
+                : 'bg-dark-bg border border-dark-border text-slate-400'
+            "
+            class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap hover:border-primary-500 hover:text-primary-400 transition-colors"
           >
-            Fiksi
+            {{ item }}
           </button>
         </div>
       </div>
@@ -85,15 +155,23 @@ onMounted(() => {
     <main class="flex-1 p-4 pb-24">
       <section class="mb-8">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-bold">Buku Populer</h2>
-          <a href="#" class="text-primary-400 text-sm">Lihat Semua</a>
+          <h2 class="text-lg font-bold">Buku Terbaru</h2>
         </div>
 
         <div class="overflow-x-auto scrollbar-hide -mx-4 px-4">
           <div class="flex gap-4">
-            <div class="w-36 flex-shrink-0">
+            <div
+              @click="
+                function () {
+                  bookDetail = item
+                }
+              "
+              class="w-36 shrink-0"
+              v-for="(item, index) in dataBooks"
+              :key="index"
+            >
               <div
-                class="aspect-[3/4] bg-gradient-to-br from-primary-500/20 to-accent-500/20 rounded-xl overflow-hidden mb-2"
+                class="aspect-3/4 bg-linear-to-br from-primary-500/20 to-accent-500/20 rounded-xl overflow-hidden mb-2"
               >
                 <img
                   src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200"
@@ -101,68 +179,16 @@ onMounted(() => {
                   class="w-full h-full object-cover"
                 />
               </div>
-              <h3 class="font-medium text-sm line-clamp-2">Laskar Pelangi</h3>
-              <p class="text-xs text-slate-400 mt-1">Andrea Hirata</p>
+              <h3 class="font-medium text-sm line-clamp-2">{{ item?.title }}</h3>
+              <p class="text-xs text-slate-400 mt-1">{{ item?.author }}</p>
               <div class="flex items-center gap-1 mt-2">
-                <span class="px-2 py-0.5 bg-success-500/20 text-success-500 rounded text-xs"
+                <span
+                  v-if="item?.available_count > 0"
+                  class="px-2 py-0.5 bg-success-500/20 text-success-500 rounded text-xs"
                   >Tersedia</span
                 >
-              </div>
-            </div>
-
-            <div class="w-36 flex-shrink-0">
-              <div
-                class="aspect-[3/4] bg-gradient-to-br from-accent-500/20 to-primary-500/20 rounded-xl overflow-hidden mb-2"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=200"
-                  alt="Book Cover"
-                  class="w-full h-full object-cover"
-                />
-              </div>
-              <h3 class="font-medium text-sm line-clamp-2">Negeri 5 Menara</h3>
-              <p class="text-xs text-slate-400 mt-1">Ahmad Fuadi</p>
-              <div class="flex items-center gap-1 mt-2">
-                <span class="px-2 py-0.5 bg-success-500/20 text-success-500 rounded text-xs"
-                  >Tersedia</span
-                >
-              </div>
-            </div>
-
-            <div class="w-36 flex-shrink-0">
-              <div
-                class="aspect-[3/4] bg-gradient-to-br from-warning-500/20 to-error-500/20 rounded-xl overflow-hidden mb-2"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200"
-                  alt="Book Cover"
-                  class="w-full h-full object-cover"
-                />
-              </div>
-              <h3 class="font-medium text-sm line-clamp-2">Bumi Manusia</h3>
-              <p class="text-xs text-slate-400 mt-1">Pramoedya A.T.</p>
-              <div class="flex items-center gap-1 mt-2">
-                <span class="px-2 py-0.5 bg-error-500/20 text-error-500 rounded text-xs"
+                <span v-else class="px-2 py-0.5 bg-error-500/20 text-error-500 rounded text-xs"
                   >Dipinjam</span
-                >
-              </div>
-            </div>
-
-            <div class="w-36 flex-shrink-0">
-              <div
-                class="aspect-[3/4] bg-gradient-to-br from-success-500/20 to-accent-500/20 rounded-xl overflow-hidden mb-2"
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=200"
-                  alt="Book Cover"
-                  class="w-full h-full object-cover"
-                />
-              </div>
-              <h3 class="font-medium text-sm line-clamp-2">Pulang</h3>
-              <p class="text-xs text-slate-400 mt-1">Tere Liye</p>
-              <div class="flex items-center gap-1 mt-2">
-                <span class="px-2 py-0.5 bg-success-500/20 text-success-500 rounded text-xs"
-                  >Tersedia</span
                 >
               </div>
             </div>
@@ -174,8 +200,13 @@ onMounted(() => {
         <h2 class="text-lg font-bold mb-4">Semua Buku</h2>
 
         <div class="grid grid-cols-2 gap-4">
-          <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
-            <div class="aspect-[3/4] bg-dark-bg">
+          <div
+            v-for="(item, index) in dataAllBooks"
+            :key="index"
+            @click="bookDetail = item"
+            class="bg-dark-card border border-dark-border rounded-xl overflow-hidden"
+          >
+            <div class="aspect-3/4 bg-dark-bg">
               <img
                 src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200"
                 alt="Book"
@@ -183,110 +214,96 @@ onMounted(() => {
               />
             </div>
             <div class="p-3">
-              <h3 class="font-medium text-sm line-clamp-2 mb-1">Laskar Pelangi</h3>
-              <p class="text-xs text-slate-400 mb-2">Andrea Hirata</p>
+              <h3 class="font-medium text-sm line-clamp-2 mb-1">{{ item?.title }}</h3>
+              <p class="text-xs text-slate-400 mb-2">{{ item?.author }}</p>
               <div class="flex items-center justify-between">
-                <span class="text-xs text-success-500">5 tersedia</span>
-                <button class="p-2 bg-primary-500 rounded-lg">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
-            <div class="aspect-[3/4] bg-dark-bg">
-              <img
-                src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=200"
-                alt="Book"
-                class="w-full h-full object-cover"
-              />
-            </div>
-            <div class="p-3">
-              <h3 class="font-medium text-sm line-clamp-2 mb-1">Negeri 5 Menara</h3>
-              <p class="text-xs text-slate-400 mb-2">Ahmad Fuadi</p>
-              <div class="flex items-center justify-between">
-                <span class="text-xs text-success-500">3 tersedia</span>
-                <button class="p-2 bg-primary-500 rounded-lg">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden opacity-60">
-            <div class="aspect-[3/4] bg-dark-bg relative">
-              <img
-                src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200"
-                alt="Book"
-                class="w-full h-full object-cover"
-              />
-              <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <span class="px-3 py-1 bg-error-500 rounded-full text-xs font-medium">Habis</span>
-              </div>
-            </div>
-            <div class="p-3">
-              <h3 class="font-medium text-sm line-clamp-2 mb-1">Bumi Manusia</h3>
-              <p class="text-xs text-slate-400 mb-2">Pramoedya A.T.</p>
-              <div class="flex items-center justify-between">
-                <span class="text-xs text-error-500">0 tersedia</span>
-                <button class="p-2 bg-dark-border rounded-lg" disabled>
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
-            <div class="aspect-[3/4] bg-dark-bg">
-              <img
-                src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=200"
-                alt="Book"
-                class="w-full h-full object-cover"
-              />
-            </div>
-            <div class="p-3">
-              <h3 class="font-medium text-sm line-clamp-2 mb-1">Pulang</h3>
-              <p class="text-xs text-slate-400 mb-2">Tere Liye</p>
-              <div class="flex items-center justify-between">
-                <span class="text-xs text-success-500">2 tersedia</span>
-                <button class="p-2 bg-primary-500 rounded-lg">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                </button>
+                <span
+                  v-if="item?.available_count > 0"
+                  class="px-2 py-0.5 bg-success-500/20 text-success-500 rounded text-xs"
+                  >{{ item?.available_count }} Tersedia</span
+                >
+                <span v-else class="px-2 py-0.5 bg-error-500/20 text-error-500 rounded text-xs"
+                  >{{ item?.available_count }} Tersedia</span
+                >
               </div>
             </div>
           </div>
         </div>
       </section>
+      <div class="flex items-center justify-center gap-2 mt-8">
+        <button
+          @click="pageActive--"
+          class="cursor-pointer px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-slate-400 hover:border-primary-500 hover:text-primary-400 disabled:opacity-40"
+          :disabled="pageActive === 1"
+        >
+          Prev
+        </button>
+
+        <button
+          v-for="(item, index) in lastPage"
+          :key="index"
+          @click="pageActive = item"
+          class="cursor-pointer px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-slate-400 hover:border-primary-500 hover:text-primary-400"
+          :class="{ 'bg-primary-500': pageActive === item, 'text-white': pageActive === item }"
+        >
+          {{ item }}
+        </button>
+
+        <button
+          @click="pageActive++"
+          class="cursor-pointer px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-slate-400 hover:border-primary-500 hover:text-primary-400 disabled:opacity-40"
+          :disabled="pageActive === lastPage"
+        >
+          Next
+        </button>
+      </div>
     </main>
+    <div id="bookModal" class="fixed inset-0 z-50 bg-black/80 flex items-end" v-if="bookDetail">
+      <div class="bg-dark-card rounded-t-3xl w-full max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-center py-3">
+          <div class="w-12 h-1 bg-dark-border rounded-full"></div>
+        </div>
+
+        <div class="p-6">
+          <div class="flex gap-4 mb-6">
+            <img
+              src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200"
+              alt="Book"
+              class="w-24 h-36 object-cover rounded-xl"
+            />
+            <div class="flex-1">
+              <h2 class="text-xl font-bold mb-2">{{ bookDetail?.title }}</h2>
+              <p class="text-slate-400 mb-2">{{ bookDetail?.author }}</p>
+              <p class="text-sm text-slate-500">{{ bookDetail?.isbn }}</p>
+              <div class="flex items-center gap-2 mt-3">
+                <span
+                  v-if="bookDetail?.available_count > 0"
+                  class="px-2 py-0.5 bg-success-500/20 text-success-500 rounded text-xs"
+                  >{{ bookDetail?.available_count }} Tersedia</span
+                >
+                <span v-else class="px-2 py-0.5 bg-error-500/20 text-error-500 rounded text-xs"
+                  >{{ bookDetail?.available_count }} Tersedia</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <h3 class="font-medium mb-2">Deskripsi</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              {{ bookDetail?.summary }}
+            </p>
+          </div>
+
+          <button
+            @click="bookDetail = null"
+            class="w-full py-4 bg-linear-to-r from-primary-500 to-accent-500 rounded-xl font-semibold text-lg flex items-center justify-center gap-2"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

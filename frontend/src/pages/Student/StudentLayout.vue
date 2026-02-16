@@ -54,11 +54,6 @@ if (!token) {
             />
           </svg>
           <span class="text-xs mt-1 font-medium">Pinjamanku</span>
-          <span
-            class="absolute -top-1 -right-1 w-5 h-5 bg-error-500 text-white rounded-full text-[10px] flex items-center justify-center border-2 border-dark-card"
-          >
-            2
-          </span>
         </div>
       </router-link>
 

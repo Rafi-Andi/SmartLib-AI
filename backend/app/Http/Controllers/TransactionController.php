@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TransactionResource;
 use App\Models\Book;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -130,7 +131,7 @@ class TransactionController
                 ], 401);
             }
 
-            $dueAt =  Carbon::now()->addDays(7);
+            $dueAt =  Carbon::now()->addDays($validated['due_days']);
             $transaction = Transaction::create([
                 "school_id" => $user->school_id,
                 "user_id" => $user->id,
@@ -169,23 +170,18 @@ class TransactionController
                 ], 401);
             }
 
-            if($transaction->status === 'returned'){
+            if ($transaction->status === 'returned') {
                 return response()->json([
                     "message" => "Buku telah di kembalikan sebelumnya"
                 ], 422);
-            } 
+            }
 
-            $dueDate = Carbon::parse($transaction->due_at);
-            $daysLate =  $dueDate->diffInDays(now(), false);
-
-            $daysLate = (int) max($daysLate, 0);
-
-            $message = $daysLate > 0 ? "Buku berhasil di kembalikan (terlambat {$daysLate} hari)" : "Buku berhasil dikembalikan";
+            $message = $transaction->days_late > 0 ? "Buku berhasil di kembalikan (terlambat {$transaction->days_late} hari)" : "Buku berhasil dikembalikan";
 
             $transaction->update([
                 "returned_at" => Carbon::now(),
                 "status" => "returned",
-                "fine_amount" => $daysLate * 1000,
+                "fine_amount" => $transaction->days_late * 1000,
             ]);
             return response()->json([
                 "message" => $message,
@@ -194,11 +190,29 @@ class TransactionController
                     "returned_at" => $transaction->returned_at,
                     "status" => $transaction->status,
                     "fine_amount" => $transaction->fine_amount,
-                    "days_late" => $daysLate,
-                    ]
+                    "days_late" => $transaction->days_late,
+                ]
             ], 200);
         } catch (\Throwable $th) {
             //throw $th;
         }
+    }
+
+    public function me(Request $request)
+    {
+        $user = $request->user();
+
+        $transactions = Transaction::query()->with('book')
+            ->when($request->status === 'borrowed', function ($q) {
+                $q->where('status', 'borrowed');
+            })->when($request->status === 'returned', function ($q) {
+                $q->where('status', 'returned');
+            })
+            ->where('user_id', $user->id)->get();
+
+        return response()->json([
+            "message" => 'berhasil mendapatkan data',
+            "data" => TransactionResource::collection($transactions)
+        ], 200);
     }
 }
