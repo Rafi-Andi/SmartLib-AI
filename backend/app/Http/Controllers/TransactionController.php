@@ -26,6 +26,7 @@ class TransactionController
         }
 
         $transactions = Transaction::query()
+            ->with('user', 'book')
             ->when($request->status, function ($q, $status) {
                 $q->where('status', $status);
             })
@@ -42,10 +43,11 @@ class TransactionController
                 $q->whereDate('borrowed_at', '<=', $date_to);
             })
             ->where('school_id', $user->school_id)
+            ->latest()
             ->paginate(10);
         return response()->json([
             "message" => "Berhasil mendapatkan data",
-            "data" => $transactions->items()
+            "data" => $transactions
         ], 200);
     }
 

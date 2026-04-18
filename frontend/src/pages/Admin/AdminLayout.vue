@@ -1,4 +1,5 @@
 <script setup>
+import api from '@/lib/axios'
 import router from '@/router'
 
 const token = localStorage.getItem('token')
@@ -9,6 +10,17 @@ if (role === 'admin') {
 }
 if (!token) {
   router.push({ name: 'Login' })
+}
+
+const handleLogout = async () => {
+  try {
+    const ress = await api.post('auth/logout')
+    alert(ress.data.message)
+    router.push({ name: 'Login' })
+    localStorage.removeItem('token')
+  } catch (error) {
+    alert(error.response.data.message)
+  }
 }
 </script>
 
@@ -33,7 +45,7 @@ if (!token) {
               d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
             />
           </svg>
-          <span>Dashboard</span>
+          <span>Dashboard </span>
         </router-link>
 
         <router-link
@@ -69,6 +81,22 @@ if (!token) {
         </router-link>
 
         <router-link
+          :to="{ name: 'AdminTransactions' }"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-400 hover:bg-dark-hover"
+          active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
+          </svg>
+          Transaksi
+        </router-link>
+
+        <router-link
           :to="{ name: 'AdminRfid' }"
           class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-400 hover:bg-dark-hover"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
@@ -94,6 +122,20 @@ if (!token) {
           </div>
           <span class="truncate flex-1">Admin Perpus</span>
         </div>
+        <button
+          @click="handleLogout"
+          class="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-red-400 hover:bg-red-500/10 transition"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"
+            />
+          </svg>
+          Logout
+        </button>
       </div>
     </aside>
 

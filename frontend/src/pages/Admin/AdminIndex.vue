@@ -1,8 +1,32 @@
+<script setup>
+import api from '@/lib/axios'
+import { formatDate } from '@/lib/format'
+import { onMounted, ref } from 'vue'
+
+const dataAnalytics = ref(null)
+
+const fetchAnalytics = async () => {
+  const ress = await api.get('/school/analytics')
+  dataAnalytics.value = ress.data.data
+  console.log(dataAnalytics.value)
+}
+
+const dataTransactions = ref(null)
+const fetchTransactions = async () => {
+  const ress = await api.get('/transactions')
+  dataTransactions.value = ress.data.data.data
+}
+onMounted(() => {
+  fetchAnalytics()
+  fetchTransactions()
+})
+</script>
+
 <template>
   <main class="flex-1 ml-64 p-8">
     <div class="mb-8">
       <h1 class="text-3xl font-bold mb-2">Dashboard</h1>
-      <p class="text-slate-400">Selamat datang kembali, Admin!</p>
+      <p class="text-slate-400">Selamat datang kembali, Admin {{ dataAnalytics?.name }} !</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -23,9 +47,8 @@
               />
             </svg>
           </div>
-          <span class="text-success-500 text-sm font-medium">+12%</span>
         </div>
-        <p class="text-3xl font-bold mb-1">1,234</p>
+        <p class="text-3xl font-bold mb-1">{{ dataAnalytics?.books_count }}</p>
         <p class="text-slate-400 text-sm">Total Buku</p>
       </div>
 
@@ -46,9 +69,8 @@
               />
             </svg>
           </div>
-          <span class="text-success-500 text-sm font-medium">+5%</span>
         </div>
-        <p class="text-3xl font-bold mb-1">456</p>
+        <p class="text-3xl font-bold mb-1">{{ dataAnalytics?.studentsCount }}</p>
         <p class="text-slate-400 text-sm">Total Siswa</p>
       </div>
 
@@ -70,7 +92,7 @@
             </svg>
           </div>
         </div>
-        <p class="text-3xl font-bold mb-1">89</p>
+        <p class="text-3xl font-bold mb-1">{{ dataAnalytics?.borrowsActive }}</p>
         <p class="text-slate-400 text-sm">Peminjaman Aktif</p>
       </div>
 
@@ -92,7 +114,7 @@
             </svg>
           </div>
         </div>
-        <p class="text-3xl font-bold text-error-500 mb-1">12</p>
+        <p class="text-3xl font-bold text-error-500 mb-1">{{ dataAnalytics?.borrowsLate }}</p>
         <p class="text-slate-400 text-sm">Terlambat</p>
       </div>
     </div>
@@ -101,7 +123,7 @@
       <div class="lg:col-span-2 bg-dark-card border border-dark-border rounded-2xl p-6">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-bold">Transaksi Terbaru</h2>
-          <a href="#" class="text-primary-400 text-sm hover:underline">Lihat Semua</a>
+          <router-link :to="{name: 'AdminTransactions'}" class="text-primary-400 text-sm hover:underline">Lihat Semua</router-link>
         </div>
 
         <div class="overflow-x-auto">
@@ -115,7 +137,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-dark-border">
-              <tr>
+              <tr v-for="(item, index) in dataTransactions" :key="index">
                 <td class="py-4">
                   <div class="flex items-center gap-3">
                     <div
@@ -123,54 +145,28 @@
                     >
                       B
                     </div>
-                    <span>Budi Santoso</span>
+                    <span>{{ item?.user?.name }}</span>
                   </div>
                 </td>
-                <td class="py-4 text-slate-300">Laskar Pelangi</td>
+                <td class="py-4 text-slate-300">{{ item?.book?.title }}</td>
                 <td class="py-4">
-                  <span class="px-3 py-1 bg-warning-500/20 text-warning-500 rounded-full text-sm"
+                  <span
+                    v-if="item?.status === 'borrowed' && item?.days_late === 0  "
+                    class="px-3 py-1 bg-warning-500/20 text-warning-500 rounded-full text-sm"
                     >Dipinjam</span
                   >
-                </td>
-                <td class="py-4 text-slate-400 text-sm">13 Jan 2026</td>
-              </tr>
-              <tr>
-                <td class="py-4">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-8 h-8 bg-accent-500/20 rounded-full flex items-center justify-center text-accent-400 text-sm font-medium"
-                    >
-                      S
-                    </div>
-                    <span>Siti Aminah</span>
-                  </div>
-                </td>
-                <td class="py-4 text-slate-300">Negeri 5 Menara</td>
-                <td class="py-4">
-                  <span class="px-3 py-1 bg-success-500/20 text-success-500 rounded-full text-sm"
+                  <span
+                    v-if="item?.status === 'returned' && item?.days_late === 0"
+                    class="px-3 py-1 bg-success-500/20 text-success-500 rounded-full text-sm"
                     >Dikembalikan</span
                   >
-                </td>
-                <td class="py-4 text-slate-400 text-sm">12 Jan 2026</td>
-              </tr>
-              <tr>
-                <td class="py-4">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-8 h-8 bg-error-500/20 rounded-full flex items-center justify-center text-error-500 text-sm font-medium"
-                    >
-                      A
-                    </div>
-                    <span>Ahmad Fauzi</span>
-                  </div>
-                </td>
-                <td class="py-4 text-slate-300">Bumi Manusia</td>
-                <td class="py-4">
-                  <span class="px-3 py-1 bg-error-500/20 text-error-500 rounded-full text-sm"
+                  <span
+                    v-if="item?.days_late > 0"
+                    class="px-3 py-1 bg-error-500/20 text-error-500 rounded-full text-sm"
                     >Terlambat</span
                   >
                 </td>
-                <td class="py-4 text-slate-400 text-sm">5 Jan 2026</td>
+                <td class="py-4 text-slate-400 text-sm">{{ formatDate(item?.borrowed_at) }}</td>
               </tr>
             </tbody>
           </table>
@@ -194,10 +190,10 @@
                 />
               </svg>
             </div>
-            <div>
+            <router-link :to="{name: 'AdminBooks'}">
               <p class="font-medium">Tambah Buku</p>
               <p class="text-sm text-slate-400">Scan atau input manual</p>
-            </div>
+            </router-link>
           </button>
 
           <button
@@ -213,10 +209,10 @@
                 />
               </svg>
             </div>
-            <div>
+            <router-link :to="{name: 'AdminRfid'}">
               <p class="font-medium">Aktivasi RFID</p>
               <p class="text-sm text-slate-400">Daftarkan kartu siswa</p>
-            </div>
+            </router-link>
           </button>
 
           <button
@@ -238,11 +234,12 @@
             </div>
           </button>
         </div>
-        
+ 
+
         <div class="mt-6 p-4 bg-dark-bg rounded-xl">
           <p class="text-sm text-slate-400 mb-1">Sekolah</p>
-          <p class="font-medium">SMA Negeri 1 Jakarta</p>
-          <p class="text-sm text-primary-400 mt-2">Kode: SMAN1JKT</p>
+          <p class="font-medium">{{ dataAnalytics?.name }}</p>
+          <p class="text-sm text-primary-400 mt-2">{{ dataAnalytics?.referral_code }}</p>
         </div>
       </div>
     </div>

@@ -1,3 +1,64 @@
+<script setup>
+import api from '@/lib/axios'
+import { onMounted, ref, watch } from 'vue'
+
+const dataCategories = ref(null)
+const fetchCategories = async () => {
+  const ress = await api.get('/books-categories')
+  dataCategories.value = ress.data.categories
+}
+
+const categoryActive = ref('')
+const pageActive = ref(1)
+const lastPage = ref(1)
+const dataBooks = ref(null)
+const searchActive = ref('')
+const totalItems = ref(0)
+
+const fetchBooks = async () => {
+  const ress = await api.get('/books', {
+    params: {
+      per_page: 5,
+      page: pageActive.value,
+      category: categoryActive.value,
+      search: searchActive.value,
+    },
+  })
+
+  dataBooks.value = ress.data.data.data
+  lastPage.value = ress.data.data.last_page
+  totalItems.value = ress.data.data.total
+}
+
+watch([categoryActive, searchActive], () => {
+  pageActive.value = 1
+})
+
+watch(pageActive, () => {
+  fetchBooks()
+})
+
+const searchTimeOut = ref(null)
+watch(searchActive, (newVal) => {
+  if (searchTimeOut.value) clearTimeout(searchTimeOut.value)
+
+  searchTimeOut.value = setTimeout(() => {
+    fetchBooks()
+  }, 500)
+})
+
+const changePage = (page) => {
+  if (page >= 1 && page <= lastPage.value) {
+    pageActive.value = page
+  }
+}
+
+onMounted(() => {
+  fetchCategories()
+  fetchBooks()
+})
+</script>
+
 <template>
   <main class="flex-1 ml-64 p-8">
     <!-- Header -->
@@ -38,33 +99,21 @@
           />
         </svg>
         <input
+          v-model="searchActive"
           type="text"
           placeholder="Cari judul, penulis, atau ISBN..."
           class="w-full pl-12 pr-4 py-3 bg-dark-card border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
         />
       </div>
       <select
+        v-model="categoryActive"
         class="px-4 py-3 bg-dark-card border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
       >
-        <option>Semua Kategori</option>
-        <option>Fiksi</option>
-        <option>Non-Fiksi</option>
-        <option>Sains</option>
-        <option>Sejarah</option>
+        <option value="">Semua Kategori</option>
+        <option :value="category" v-for="(category, index) in dataCategories" :key="index">
+          {{ category }}
+        </option>
       </select>
-      <button
-        class="px-4 py-3 bg-dark-card border border-dark-border rounded-xl text-accent-400 flex items-center gap-2 hover:bg-dark-hover"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-          />
-        </svg>
-        Filter
-      </button>
     </div>
 
     <!-- Books Table -->
@@ -82,7 +131,7 @@
         </thead>
         <tbody class="divide-y divide-dark-border">
           <!-- Row 1 -->
-          <tr class="hover:bg-dark-hover">
+          <tr class="hover:bg-dark-hover" v-for="(book, index) in dataBooks" :key="index">
             <td class="px-6 py-4">
               <div class="flex items-center gap-3">
                 <div class="w-12 h-16 bg-primary-500/20 rounded-lg overflow-hidden">
@@ -92,18 +141,21 @@
                   />
                 </div>
                 <div>
-                  <p class="font-medium">Laskar Pelangi</p>
-                  <p class="text-sm text-slate-400">Andrea Hirata</p>
+                  <p class="font-medium">{{ book?.title }}</p>
+                  <p class="text-sm text-slate-400">{{ book?.author }}</p>
                 </div>
               </div>
             </td>
-            <td class="px-6 py-4 text-sm font-mono text-slate-400">978-979-1227-28-0</td>
+            <td class="px-6 py-4 text-sm font-mono text-slate-400">{{ book?.isbn }}</td>
             <td class="px-6 py-4">
-              <span class="px-3 py-1 bg-primary-500/20 text-primary-400 rounded-full text-sm"
-                >Fiksi</span
-              >
+              <span class="px-3 py-1 bg-primary-500/20 text-primary-400 rounded-full text-sm">{{
+                book?.category
+              }}</span>
             </td>
-            <td class="px-6 py-4"><span class="text-success-500">5</span> / 5</td>
+            <td class="px-6 py-4">
+              <span class="text-success-500">{{ book?.borrowed_count }}</span> /
+              {{ book?.stock_count }}
+            </td>
             <td class="px-6 py-4">
               <span class="px-3 py-1 bg-success-500/20 text-success-500 rounded-full text-sm"
                 >Tersedia</span
@@ -136,143 +188,44 @@
               </div>
             </td>
           </tr>
-
-          <!-- Row 2 -->
-          <tr class="hover:bg-dark-hover">
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-16 bg-accent-500/20 rounded-lg overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=100"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <p class="font-medium">Negeri 5 Menara</p>
-                  <p class="text-sm text-slate-400">Ahmad Fuadi</p>
-                </div>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-sm font-mono text-slate-400">978-602-030-12-1</td>
-            <td class="px-6 py-4">
-              <span class="px-3 py-1 bg-accent-500/20 text-accent-400 rounded-full text-sm"
-                >Inspirasi</span
-              >
-            </td>
-            <td class="px-6 py-4"><span class="text-warning-500">1</span> / 3</td>
-            <td class="px-6 py-4">
-              <span class="px-3 py-1 bg-warning-500/20 text-warning-500 rounded-full text-sm"
-                >Terbatas</span
-              >
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-2">
-                <button
-                  class="p-2 text-slate-400 hover:text-primary-400 hover:bg-dark-bg rounded-lg"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                </button>
-                <button class="p-2 text-slate-400 hover:text-error-500 hover:bg-dark-bg rounded-lg">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Row 3 -->
-          <tr class="hover:bg-dark-hover">
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-16 bg-error-500/20 rounded-lg overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=100"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <p class="font-medium">Bumi Manusia</p>
-                  <p class="text-sm text-slate-400">Pramoedya A.T.</p>
-                </div>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-sm font-mono text-slate-400">978-979-9105-67-8</td>
-            <td class="px-6 py-4">
-              <span class="px-3 py-1 bg-error-500/20 text-error-500 rounded-full text-sm"
-                >Sejarah</span
-              >
-            </td>
-            <td class="px-6 py-4"><span class="text-error-500">0</span> / 2</td>
-            <td class="px-6 py-4">
-              <span class="px-3 py-1 bg-error-500/20 text-error-500 rounded-full text-sm"
-                >Habis</span
-              >
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-2">
-                <button
-                  class="p-2 text-slate-400 hover:text-primary-400 hover:bg-dark-bg rounded-lg"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                </button>
-                <button class="p-2 text-slate-400 hover:text-error-500 hover:bg-dark-bg rounded-lg">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
         </tbody>
       </table>
 
-      <!-- Pagination -->
       <div class="flex items-center justify-between px-6 py-4 border-t border-dark-border">
-        <p class="text-sm text-slate-400">Menampilkan 1-10 dari 234 buku</p>
+        <p class="text-sm text-slate-400">
+          Halaman {{ pageActive }} dari {{ lastPage }}
+          <span v-if="totalItems">({{ totalItems }} total buku)</span>
+        </p>
+
         <div class="flex gap-2">
           <button
-            class="px-4 py-2 border border-dark-border rounded-lg text-slate-400 hover:bg-dark-hover"
+            @click="changePage(pageActive - 1)"
+            :disabled="pageActive === 1"
+            :class="{ 'opacity-50 cursor-not-allowed': pageActive === 1 }"
+            class="px-4 py-2 border border-dark-border rounded-lg text-slate-400 hover:bg-dark-hover transition-colors"
           >
             Sebelumnya
           </button>
-          <button class="px-4 py-2 bg-primary-500 rounded-lg">1</button>
+
           <button
-            class="px-4 py-2 border border-dark-border rounded-lg text-slate-400 hover:bg-dark-hover"
+            v-for="page in lastPage"
+            :key="page"
+            @click="changePage(page)"
+            :class="[
+              pageActive === page
+                ? 'bg-primary-500 text-white'
+                : 'border border-dark-border text-slate-400 hover:bg-dark-hover',
+            ]"
+            class="px-4 py-2 rounded-lg transition-colors"
           >
-            2
+            {{ page }}
           </button>
+
           <button
-            class="px-4 py-2 border border-dark-border rounded-lg text-slate-400 hover:bg-dark-hover"
-          >
-            3
-          </button>
-          <button
-            class="px-4 py-2 border border-dark-border rounded-lg text-slate-400 hover:bg-dark-hover"
+            @click="changePage(pageActive + 1)"
+            :disabled="pageActive === lastPage"
+            :class="{ 'opacity-50 cursor-not-allowed': pageActive === lastPage }"
+            class="px-4 py-2 border border-dark-border rounded-lg text-slate-400 hover:bg-dark-hover transition-colors"
           >
             Selanjutnya
           </button>
