@@ -20,7 +20,7 @@ class UserManagementController
             $q->where('role', $role);
         })->when($request->search, function ($q, $search) {
             $q->where('name', 'like', '%' . $search . '%');
-        })->where("school_id", $user->school_id)->paginate(8);
+        })->where("school_id", $user->school_id)->paginate(5);
 
         return response()->json([
             "message" => "Berhasil mendapatkan data user",
@@ -64,13 +64,14 @@ class UserManagementController
         ], 201);
     }
 
-    public function show(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            "name" => "required|string|max:255",
-            "email" => "required|string|unique:users",
-            "referral_code" => "required|string",
-            "nisn" => "nullable|string|max:20"
+            "name" => "nullable|string|max:255",
+            "email" => "nullable|string|unique:users,{$id}",
+            "referral_code" => "nullable|string",
+            "nisn" => "nullable|string|max:20",
+            "is_active" => "nullable|boolean"
         ]);
 
         $user = $request->user();
