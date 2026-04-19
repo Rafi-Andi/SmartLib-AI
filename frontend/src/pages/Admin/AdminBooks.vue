@@ -1,6 +1,6 @@
 <script setup>
 import api from '@/lib/axios'
-import { onMounted, ref, watch } from 'vue'
+import { handleError, onMounted, ref, watch } from 'vue'
 
 const dataCategories = ref(null)
 const fetchCategories = async () => {
@@ -14,7 +14,6 @@ const lastPage = ref(1)
 const dataBooks = ref(null)
 const searchActive = ref('')
 const totalItems = ref(0)
-
 const fetchBooks = async () => {
   const ress = await api.get('/books', {
     params: {
@@ -30,8 +29,13 @@ const fetchBooks = async () => {
   totalItems.value = ress.data.data.total
 }
 
-watch([categoryActive, searchActive], () => {
+watch(categoryActive, () => {
   pageActive.value = 1
+  fetchBooks()
+})
+watch(searchActive, () => {
+  pageActive.value = 1
+  fetchBooks()
 })
 
 watch(pageActive, () => {
@@ -53,6 +57,74 @@ const changePage = (page) => {
   }
 }
 
+const isAddBook = ref(false)
+
+const formAddBook = ref({
+  title: '',
+  author: '',
+  isbn: '',
+  publisher: '',
+  year_published: 2026,
+  category: '',
+  description: '',
+  stock_count: 5,
+})
+
+const handleAddBook = async () => {
+  try {
+    const ress = await api.post('/books', formAddBook.value)
+    alert(ress.data.message)
+    formAddBook.value = {
+      title: '',
+      author: '',
+      isbn: '',
+      publisher: '',
+      year_published: 2026,
+      category: '',
+      description: '',
+      stock_count: 5,
+    }
+    isAddBook.value = false
+    fetchBooks()
+  } catch (error) {
+    alert(error.response.data.message)
+  }
+}
+const handleEditBook = async () => {
+  try {
+    const ress = await api.put(`books/${editData.value.id}`, formAddBook.value)
+    alert(ress.data.message)
+    formAddBook.value = {
+      title: '',
+      author: '',
+      isbn: '',
+      publisher: '',
+      year_published: 2026,
+      category: '',
+      description: '',
+      stock_count: 5,
+    }
+    editData.value = null
+    fetchBooks()
+  } catch (error) {
+    alert(error.response.data.message)
+  }
+}
+
+const handleDelete = async (id) => {
+  if (confirm('Apakah yakin ingin menghapus?')) {
+  }
+  try {
+    const ress = await api.delete(`/books/${id}`)
+    alert(ress.data.message)
+    fetchBooks()
+  } catch (error) {
+    alert(error.response.data.message)
+  }
+}
+
+const editData = ref(null)
+
 onMounted(() => {
   fetchCategories()
   fetchBooks()
@@ -68,6 +140,7 @@ onMounted(() => {
         <p class="text-slate-400">Kelola koleksi perpustakaan</p>
       </div>
       <button
+        @click="isAddBook = true"
         class="px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold flex items-center gap-2 hover:opacity-90"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,17 +226,28 @@ onMounted(() => {
               }}</span>
             </td>
             <td class="px-6 py-4">
-              <span class="text-success-500">{{ book?.borrowed_count }}</span> /
+              <span class="">{{ book?.borrowed_count }}</span> /
               {{ book?.stock_count }}
             </td>
             <td class="px-6 py-4">
-              <span class="px-3 py-1 bg-success-500/20 text-success-500 rounded-full text-sm"
+              <span
+                v-if="book?.available_count > 0"
+                class="px-3 py-1 bg-success-500/20 text-success-500 rounded-full text-sm"
                 >Tersedia</span
+              >
+              <span v-else class="px-3 py-1 bg-red-500/20 text-red-500 rounded-full text-sm"
+                >Tidak Tersedia</span
               >
             </td>
             <td class="px-6 py-4">
               <div class="flex items-center gap-2">
                 <button
+                  @click="
+                    () => {
+                      editData = book
+                      formAddBook = book
+                    }
+                  "
                   class="p-2 text-slate-400 hover:text-primary-400 hover:bg-dark-bg rounded-lg"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,7 +259,10 @@ onMounted(() => {
                     />
                   </svg>
                 </button>
-                <button class="p-2 text-slate-400 hover:text-error-500 hover:bg-dark-bg rounded-lg">
+                <button
+                  @click="handleDelete(book?.id)"
+                  class="p-2 text-slate-400 hover:text-error-500 hover:bg-dark-bg rounded-lg"
+                >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
@@ -236,14 +323,15 @@ onMounted(() => {
 
   <div
     id="addBookModal"
-    class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden"
+    v-if="isAddBook"
+    class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
   >
     <div
       class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
     >
       <div class="flex items-center justify-between p-6 border-b border-dark-border">
         <h2 class="text-xl font-bold">Tambah Buku Baru</h2>
-        <button class="p-2 text-slate-400 hover:text-white">
+        <button class="p-2 text-slate-400 hover:text-white" @click="isAddBook = false">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -298,11 +386,12 @@ onMounted(() => {
         </div>
       </div>
 
-      <form class="p-6 space-y-4">
+      <form class="p-6 space-y-4" @submit.prevent="handleAddBook">
         <div class="grid grid-cols-2 gap-4">
           <div class="col-span-2">
             <label class="block text-sm text-slate-400 mb-2">Judul Buku *</label>
             <input
+              v-model="formAddBook.title"
               type="text"
               class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
             />
@@ -310,6 +399,7 @@ onMounted(() => {
           <div>
             <label class="block text-sm text-slate-400 mb-2">Penulis</label>
             <input
+              v-model="formAddBook.author"
               type="text"
               class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
             />
@@ -317,6 +407,7 @@ onMounted(() => {
           <div>
             <label class="block text-sm text-slate-400 mb-2">ISBN</label>
             <input
+              v-model="formAddBook.isbn"
               type="text"
               class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
             />
@@ -324,6 +415,7 @@ onMounted(() => {
           <div>
             <label class="block text-sm text-slate-400 mb-2">Penerbit</label>
             <input
+              v-model="formAddBook.publisher"
               type="text"
               class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
             />
@@ -331,25 +423,22 @@ onMounted(() => {
           <div>
             <label class="block text-sm text-slate-400 mb-2">Tahun Terbit</label>
             <input
+              v-model="formAddBook.year_published"
               type="number"
               class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
             />
           </div>
           <div>
             <label class="block text-sm text-slate-400 mb-2">Kategori</label>
-            <select
+            <input
+              v-model="formAddBook.category"
               class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
-            >
-              <option>Pilih Kategori</option>
-              <option>Fiksi</option>
-              <option>Non-Fiksi</option>
-              <option>Sains</option>
-              <option>Sejarah</option>
-            </select>
+            />
           </div>
           <div>
             <label class="block text-sm text-slate-400 mb-2">Jumlah Stok *</label>
             <input
+              v-model="formAddBook.stock_count"
               type="number"
               value="1"
               min="1"
@@ -360,6 +449,7 @@ onMounted(() => {
 
         <div class="flex gap-4 pt-4">
           <button
+            @click="isAddBook = false"
             type="button"
             class="flex-1 py-3 border border-dark-border rounded-xl hover:bg-dark-hover"
           >
@@ -370,6 +460,181 @@ onMounted(() => {
             class="flex-1 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold"
           >
             Simpan Buku
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div
+    id="editBookModal"
+    v-if="editData"
+    class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+  >
+    <div
+      class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+    >
+      <div class="flex items-center justify-between p-6 border-b border-dark-border">
+        <h2 class="text-xl font-bold">Edit Buku Baru</h2>
+        <button
+          class="p-2 text-slate-400 hover:text-white"
+          @click="
+            () => {
+              editData = null
+              formAddBook = {
+                title: '',
+                author: '',
+                isbn: '',
+                publisher: '',
+                year_published: 2026,
+                category: '',
+                description: '',
+                stock_count: 5,
+              }
+            }
+          "
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Camera Section -->
+      <div class="p-6 border-b border-dark-border">
+        <div
+          class="bg-dark-bg border-2 border-dashed border-dark-border rounded-xl p-8 text-center"
+        >
+          <svg
+            class="w-12 h-12 text-slate-400 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+          <p class="text-slate-400 mb-4">
+            Scan sampul buku dengan kamera untuk ekstrak metadata menggunakan AI
+          </p>
+          <button
+            class="px-6 py-3 bg-accent-500 rounded-xl font-medium flex items-center gap-2 mx-auto hover:opacity-90"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+              />
+            </svg>
+            Buka Kamera
+          </button>
+        </div>
+      </div>
+
+      <form class="p-6 space-y-4" @submit.prevent="handleEditBook">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2">
+            <label class="block text-sm text-slate-400 mb-2">Judul Buku *</label>
+            <input
+              v-model="formAddBook.title"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Penulis</label>
+            <input
+              v-model="formAddBook.author"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">ISBN</label>
+            <input
+              v-model="formAddBook.isbn"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Penerbit</label>
+            <input
+              v-model="formAddBook.publisher"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Tahun Terbit</label>
+            <input
+              v-model="formAddBook.year_published"
+              type="number"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Kategori</label>
+            <input
+              v-model="formAddBook.category"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Jumlah Stok *</label>
+            <input
+              v-model="formAddBook.stock_count"
+              type="number"
+              value="1"
+              min="1"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="flex gap-4 pt-4">
+          <button
+            @click="
+              () => {
+                editData = null
+                formAddBook = {
+                  title: '',
+                  author: '',
+                  isbn: '',
+                  publisher: '',
+                  year_published: 2026,
+                  category: '',
+                  description: '',
+                  stock_count: 5,
+                }
+              }
+            "
+            type="button"
+            class="flex-1 py-3 border border-dark-border rounded-xl hover:bg-dark-hover"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            class="flex-1 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold"
+          >
+            Edit Buku
           </button>
         </div>
       </form>

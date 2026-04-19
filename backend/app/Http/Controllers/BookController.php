@@ -136,13 +136,14 @@ class BookController
             ], 401);
         }
 
-        $data = $request->only([
-            'title',
-            'isbn',
-            'publisher',
-            'year_published',
-            'category',
-            'stock_count',
+        $data = $request->validate([
+            "title" => ['nullable', 'string', 'max:255'],
+            "author" => ['nullable', 'string', 'max:255'],
+            'isbn' => ['nullable', 'string', 'max:20', 'unique:books,isbn,' . $id],
+            'publisher' => ['nullable', 'string', 'max:255'],
+            'year_published' => ['nullable', 'integer', 'min:1900', 'max:' . now()->year],
+            'category' =>  ['nullable', 'string', 'max:100'],
+            'stock_count' => ['nullable', 'integer', 'min:1']
         ]);
 
         if (array_key_exists('stock_count', $data)) {

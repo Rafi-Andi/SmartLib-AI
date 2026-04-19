@@ -12,6 +12,8 @@ if (!token) {
   router.push({ name: 'Login' })
 }
 
+const name = localStorage.getItem('name')
+
 const handleLogout = async () => {
   try {
     const ress = await api.post('auth/logout')
@@ -118,9 +120,9 @@ const handleLogout = async () => {
           <div
             class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center font-bold"
           >
-            A
+            {{ name[0] }}
           </div>
-          <span class="truncate flex-1">Admin Perpus</span>
+          <span class="truncate flex-1">{{ name }}</span>
         </div>
         <button
           @click="handleLogout"
