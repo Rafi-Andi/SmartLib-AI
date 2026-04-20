@@ -28,7 +28,6 @@ const fetchUsers = async () => {
 const changePage = (newPage) => {
   if (newPage >= 1 && newPage <= lastPage.value) {
     page.value = newPage
-    console.log('Pindah ke halaman:', newPage)
   }
 }
 watch([search, roleActive], () => {
@@ -39,6 +38,66 @@ watch([search, roleActive], () => {
 watch(page, () => {
   fetchUsers()
 })
+
+const formAddUser = ref({
+  name: '',
+  email: '',
+  password: '',
+  nisn: '',
+  role: '',
+  is_active: false,
+})
+
+const isAddUser = ref(false)
+
+const handleAddUser = async () => {
+  try {
+    const ress = await api.post('users', formAddUser.value)
+    alert(ress.data.message)
+    fetchUsers()
+    isAddUser.value = false
+    clearFormUser()
+  } catch (error) {
+    alert(error.response.data.message)
+  }
+}
+
+const editData = ref(null)
+
+const handleEditUser = async () => {
+  try {
+    const ress = await api.put(`users/${editData.value.id}`, formAddUser.value)
+    alert(ress.data.message)
+    fetchUsers()
+    editData.value = null
+    clearFormUser()
+  } catch (error) {
+    alert(error.response.data.message)
+  }
+}
+
+const clearFormUser = () => {
+  formAddUser.value = {
+    name: '',
+    email: '',
+    password: '',
+    nisn: '',
+    role: '',
+    is_active: false,
+  }
+}
+
+const handleDelete = async (id) => {
+  if (confirm('Apakah yakin ingin menghapus?')) {
+    try {
+      const ress = await api.delete(`users/${id}`)
+      alert(ress.data.message)
+      fetchUsers()
+    } catch (error) {
+      alert(error.response.data.message)
+    }
+  }
+}
 
 onMounted(() => {
   fetchUsers()
@@ -53,6 +112,7 @@ onMounted(() => {
         <p class="text-slate-400">Kelola siswa dan admin perpustakaan</p>
       </div>
       <button
+        @click="isAddUser = true"
         class="px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold flex items-center gap-2"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,6 +262,12 @@ onMounted(() => {
             <td class="px-6 py-4">
               <div class="flex items-center gap-2">
                 <button
+                  @click="
+                    () => {
+                      editData = user
+                      formAddUser = user
+                    }
+                  "
                   class="p-2 text-slate-400 hover:text-primary-400 hover:bg-dark-bg rounded-lg"
                   title="Edit"
                 >
@@ -215,6 +281,7 @@ onMounted(() => {
                   </svg>
                 </button>
                 <button
+                  @click="handleDelete(user?.id)"
                   class="p-2 text-slate-400 hover:text-error-500 hover:bg-dark-bg rounded-lg"
                   title="Hapus"
                 >
@@ -269,4 +336,209 @@ onMounted(() => {
       </div>
     </div>
   </main>
+
+  <div
+    v-if="isAddUser"
+    id="addUserModal"
+    class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+  >
+    <div
+      class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+    >
+      <div class="flex items-center justify-between p-6 border-b border-dark-border">
+        <h2 class="text-xl font-bold">Tambah Pengguna Baru</h2>
+        <button
+          @click="
+            () => {
+              isAddUser = false
+              clearFormUser()
+            }
+          "
+          class="p-2 text-slate-400 hover:text-white"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+      <!-- Form -->
+      <form @submit.prevent="handleAddUser" class="p-6 space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2">
+            <label class="block text-sm text-slate-400 mb-2">Nama*</label>
+            <input
+              v-model="formAddUser.name"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Email</label>
+            <input
+              v-model="formAddUser.email"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Password</label>
+            <input
+              v-model="formAddUser.password"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">NISN</label>
+            <input
+              v-model="formAddUser.nisn"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Role</label>
+            <select
+              v-model="formAddUser.role"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            >
+              <option value="">Pilih role</option>
+              <option value="student">Student</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex gap-4 pt-4">
+          <button
+            @click="
+              () => {
+                isAddUser = false
+                clearFormUser()
+              }
+            "
+            type="button"
+            class="flex-1 py-3 border border-dark-border rounded-xl hover:bg-dark-hover"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            class="flex-1 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold"
+          >
+            Simpan Pengguna
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div
+    v-if="editData"
+    id="editUserModal"
+    class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+  >
+    <div
+      class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+    >
+      <div class="flex items-center justify-between p-6 border-b border-dark-border">
+        <h2 class="text-xl font-bold">Edit Pengguna</h2>
+        <button
+          @click="
+            () => {
+              editData = null
+              clearFormUser()
+            }
+          "
+          class="p-2 text-slate-400 hover:text-white"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+      <!-- Form -->
+      <form @submit.prevent="handleEditUser" class="p-6 space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2">
+            <label class="block text-sm text-slate-400 mb-2">Nama*</label>
+            <input
+              v-model="formAddUser.name"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Email</label>
+            <input
+              v-model="formAddUser.email"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">NISN</label>
+            <input
+              v-model="formAddUser.nisn"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Role</label>
+            <select
+              v-model="formAddUser.role"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            >
+              <option value="">Pilih role</option>
+              <option value="student">Student</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-slate-400 mb-2">Aktif</label>
+            <select
+              v-model="formAddUser.is_active"
+              type="text"
+              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+            >
+              <option :value="false">Tidak Aktif</option>
+              <option :value="true">Aktif</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex gap-4 pt-4">
+          <button
+            @click="
+              () => {
+                editData = null
+                clearFormUser()
+              }
+            "
+            type="button"
+            class="flex-1 py-3 border border-dark-border rounded-xl hover:bg-dark-hover"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            class="flex-1 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold"
+          >
+            Simpan Pengguna
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
