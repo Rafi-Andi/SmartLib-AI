@@ -26,7 +26,6 @@ watch(statusActive, () => {
   fetchBorrows()
 })
 const name = localStorage.getItem('name')
-
 </script>
 
 <template>
@@ -38,7 +37,8 @@ const name = localStorage.getItem('name')
         <div>
           <h1 class="text-xl font-bold">Pinjamanku</h1>
         </div>
-        <router-link :to="{name: 'StudentProfile'}"
+        <router-link
+          :to="{ name: 'StudentProfile' }"
           class="w-8 h-8 bg-linear-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center text-sm font-bold"
         >
           {{ name[0] }}
@@ -74,13 +74,19 @@ const name = localStorage.getItem('name')
     <main class="flex-1 p-4 space-y-4">
       <div v-if="statusActive === 'borrowed'">
         <h2 class="font-bold text-lg mb-4">Aktif Peminjaman</h2>
-        <p class="text-center" v-if="!dataBorrows">Tidak ada data</p>
+
+        <!-- Pesan jika data kosong -->
+        <p class="text-center text-slate-500 py-10" v-if="dataBorrows && dataBorrows.length === 0">
+          Tidak ada peminjaman aktif
+        </p>
+
         <div
           v-for="(item, index) in dataBorrows"
           :key="index"
           :class="item?.days_late > 0 ? 'border-error-500/50' : 'border-dark-border'"
-          class="bg-dark-card border rounded-2xl overflow-hidden hidden"
+          class="bg-dark-card border rounded-2xl overflow-hidden mb-4"
         >
+
           <div
             v-if="item?.days_late > 0"
             class="bg-error-500/10 px-4 py-2 flex items-center gap-2 border-b border-error-500/30"
@@ -98,16 +104,21 @@ const name = localStorage.getItem('name')
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
               />
             </svg>
-            <span class="text-error-500 font-medium text-sm"
-              >Terlambat {{ item?.days_late }} hari! Denda:
-              {{ formatRupiah(1000 * item?.days_late) }}</span
-            >
+            <span class="text-error-500 font-medium text-sm">
+              Terlambat {{ item?.days_late }} hari! Denda:
+              {{ formatRupiah(1000 * item?.days_late) }}
+            </span>
           </div>
 
           <div class="flex gap-4 p-4">
-            <div class="w-20 h-28 bg-error-500/20 rounded-xl overflow-hidden shrink-0">
+            <div
+              class="w-20 h-28 bg-primary-500/10 rounded-xl overflow-hidden shrink-0 border border-dark-border"
+            >
               <img
-                src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=150"
+                :src="
+                  item?.book?.cover_url ||
+                  'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=150'
+                "
                 class="w-full h-full object-cover"
               />
             </div>
@@ -127,16 +138,20 @@ const name = localStorage.getItem('name')
                       item?.days_late > 0 ? 'text-error-500 line-through' : 'text-warning-500'
                     "
                     class="font-medium"
-                    >{{ formatDate(item?.due_at) }}</span
                   >
+                    {{ formatDate(item?.due_at) }}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
+
           <div class="px-4 pb-4" v-if="item?.days_late === 0">
-            <div class="flex items-center justify-between text-xs mb-2">
+            <div
+              class="flex items-center justify-between text-xs p-2 bg-dark-bg rounded-lg border border-dark-border"
+            >
               <span class="text-slate-400">Sisa waktu</span>
-              <span class="text-warning-500">{{ item?.days_remaining }} hari lagi</span>
+              <span class="text-warning-500 font-bold">{{ item?.days_remaining }} hari lagi</span>
             </div>
           </div>
         </div>

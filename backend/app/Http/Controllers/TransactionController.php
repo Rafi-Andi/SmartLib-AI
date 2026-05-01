@@ -30,9 +30,16 @@ class TransactionController
             ->when($request->status, function ($q, $status) {
                 $q->where('status', $status);
             })
-            ->when($request->user_id, function ($q, $user_id) {
-                $q->where('user_id', $user_id);
-            })
+            ->when($request->search, function ($q, $search) {
+            $q->where(function ($query) use ($search) {
+                $query->whereHas('user', function ($u) use ($search) {
+                    $u->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('book', function ($b) use ($search) {
+                    $b->where('title', 'like', '%' . $search . '%');
+                });
+            });
+        })
             ->when($request->book_id, function ($q, $book_id) {
                 $q->where('book_id', $book_id);
             })
@@ -44,7 +51,7 @@ class TransactionController
             })
             ->where('school_id', $user->school_id)
             ->latest()
-            ->paginate(10);
+            ->paginate(5);
         return response()->json([
             "message" => "Berhasil mendapatkan data",
             "data" => $transactions
@@ -101,8 +108,6 @@ class TransactionController
 
     public function borrow(Request $request)
     {
-
-
         try {
             $validated = $request->validate([
                 "book_id" => "required|exists:books,id",
@@ -217,4 +222,29 @@ class TransactionController
             "data" => TransactionResource::collection($transactions)
         ], 200);
     }
+
+    public function analytics(Request $request)
+{
+    $user = $request->user();
+    $today = now()->toDateString();
+
+    $stats = Transaction::where('school_id', $user->school_id)
+        ->selectRaw("
+            COUNT(*) as total_transactions,
+            SUM(CASE WHEN status = 'borrowed' THEN 1 ELSE 0 END) as total_borrowed,
+            SUM(CASE WHEN status = 'returned' AND DATE(returned_at) = '$today' THEN 1 ELSE 0 END) as returned_today,
+            SUM(CASE WHEN status = 'borrowed' AND due_at < NOW() THEN 1 ELSE 0 END) as total_late
+        ")
+        ->first();
+
+    return response()->json([
+        "message" => "Berhasil mendapatkan statistik",
+        "data" => [
+            "total" => $stats->total_transactions ?? 0,
+            "borrowed" => $stats->total_borrowed ?? 0,
+            "late" => $stats->total_late ?? 0,
+            "returned_today" => $stats->returned_today ?? 0,
+        ]
+    ], 200);
+}
 }

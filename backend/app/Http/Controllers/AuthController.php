@@ -192,4 +192,34 @@ class AuthController
             "data" => $user
         ], 200);
     }
+
+    public function loginRfid(Request $request){
+        $validated = $request->validate([
+            "rfid_uid" => "required|string"
+        ]);
+
+        $user = $request->user();
+
+        if($user->role !== 'admin'){
+            return response()->json([
+                "message" => "Role Unauthorized"
+            ], 403);
+        }
+
+        $student = User::where('rfid_uid', $validated['rfid_uid'])->where('school_id', $user->school_id)->first();
+
+        if(!$student){
+            return response()->json([
+                "message" => "RFID UID is not valid"
+            ], 401);
+        }
+
+        $studentToken = $student->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            "message" => "Login KIOSK success",
+            "student_token" => $studentToken
+        ], 200);
+    }
+
 }

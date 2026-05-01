@@ -20,7 +20,10 @@ class UserManagementController
             $q->where('role', $role);
         })->when($request->search, function ($q, $search) {
             $q->where('name', 'like', '%' . $search . '%');
-        })->where("school_id", $user->school_id)->orderBy('created_at', 'desc')->paginate(5);
+        })->when($request->boolean('is_rfid'), function($q) {
+            $q->whereNull('rfid_uid');
+        })
+        ->where("school_id", $user->school_id)->orderBy('created_at', 'desc')->paginate(5);
 
         return response()->json([
             "message" => "Berhasil mendapatkan data user",
@@ -71,7 +74,8 @@ class UserManagementController
             "email" => "nullable|string|unique:users,email,{$id}",
             "referral_code" => "nullable|string",
             "nisn" => "nullable|string|max:20",
-            "is_active" => "nullable|boolean"
+            "is_active" => "nullable|boolean",
+            "rfid_uid" => "nullable|string"
         ]);
 
         $user = $request->user();

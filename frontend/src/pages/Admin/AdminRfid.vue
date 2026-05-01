@@ -1,3 +1,48 @@
+<script setup>
+import api from '@/lib/axios';
+import { onMounted, ref, watch } from 'vue';
+
+
+const dataUsers = ref(null)
+const searchName = ref('')
+const isRfid = ref(true)
+const uidInput = ref('')
+
+const fetchUsers = async () => {
+  const ress = await api.get('users', {
+    params: {
+      search: searchName.value,
+      is_rfid: isRfid.value
+    }
+  })
+  dataUsers.value = ress.data.data.data
+}
+
+const userActive = ref(null)
+
+watch([searchName, isRfid], () => {
+  fetchUsers()
+})
+
+const updateRfid = async (id) => {
+  try {
+    const ress = await api.put(`users/${id}`, {
+      rfid_uid: uidInput.value
+    })
+    alert(ress.data.message)
+    fetchUsers()
+    userActive.value = null
+  } catch (error) {
+    alert(error.response.data.message)
+  }
+}
+
+onMounted(() => {
+  fetchUsers()
+})
+
+</script>
+
 <template>
   <main class="flex-1 ml-64 p-8">
     <div class="mb-8">
@@ -31,64 +76,36 @@
           </svg>
           <input
             type="text"
+            v-model="searchName"
             placeholder="Cari nama atau NISN siswa..."
             class="w-full pl-12 pr-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
           />
         </div>
 
         <label class="flex items-center gap-2 text-sm text-slate-400 mb-4">
-          <input type="checkbox" checked class="w-4 h-4 rounded" />
+          <input v-model="isRfid" type="checkbox" checked class="w-4 h-4 rounded" />
           Hanya tampilkan yang belum punya RFID
         </label>
 
         <div class="space-y-2 max-h-80 overflow-y-auto">
           <button
+          @click="userActive = user"
+          v-for="(user, index) in dataUsers" :key="index"
             class="w-full flex items-center gap-4 p-4 bg-dark-bg border border-dark-border rounded-xl hover:border-primary-500 text-left transition-colors"
           >
             <div
               class="w-12 h-12 bg-gradient-to-br from-accent-500 to-primary-500 rounded-full flex items-center justify-center font-bold text-lg"
             >
-              S
+              {{ user?.name[0] }}
             </div>
             <div class="flex-1">
-              <p class="font-medium">Siti Aminah</p>
-              <p class="text-sm text-slate-400">NISN: 0012345679</p>
+              <p class="font-medium">{{ user?.name }}</p>
+              <p class="text-sm text-slate-400">NISN: {{ user?.nisn }}</p>
             </div>
-            <span class="px-3 py-1 bg-warning-500/20 text-warning-500 rounded-full text-xs"
-              >Belum RFID</span
+            <span v-if="user?.rfid_uid" class="px-3 py-1 bg-green-500/20 text-green-500 rounded-full text-xs"
+              >Sudah RFID</span
             >
-          </button>
-
-          <button
-            class="w-full flex items-center gap-4 p-4 bg-dark-bg border border-dark-border rounded-xl hover:border-primary-500 text-left transition-colors"
-          >
-            <div
-              class="w-12 h-12 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center font-bold text-lg"
-            >
-              R
-            </div>
-            <div class="flex-1">
-              <p class="font-medium">Rudi Hermawan</p>
-              <p class="text-sm text-slate-400">NISN: 0012345680</p>
-            </div>
-            <span class="px-3 py-1 bg-warning-500/20 text-warning-500 rounded-full text-xs"
-              >Belum RFID</span
-            >
-          </button>
-
-          <button
-            class="w-full flex items-center gap-4 p-4 bg-dark-bg border border-dark-border rounded-xl hover:border-primary-500 text-left transition-colors"
-          >
-            <div
-              class="w-12 h-12 bg-gradient-to-br from-success-500 to-accent-500 rounded-full flex items-center justify-center font-bold text-lg"
-            >
-              D
-            </div>
-            <div class="flex-1">
-              <p class="font-medium">Dewi Lestari</p>
-              <p class="text-sm text-slate-400">NISN: 0012345681</p>
-            </div>
-            <span class="px-3 py-1 bg-warning-500/20 text-warning-500 rounded-full text-xs"
+            <span v-else class="px-3 py-1 bg-warning-500/20 text-warning-500 rounded-full text-xs"
               >Belum RFID</span
             >
           </button>
@@ -104,17 +121,17 @@
           <h2 class="text-lg font-bold">Tempel Kartu RFID</h2>
         </div>
 
-        <div class="bg-primary-500/10 border border-primary-500/30 rounded-xl p-4 mb-6">
+        <div v-if="userActive" class="bg-primary-500/10 border border-primary-500/30 rounded-xl p-4 mb-6">
           <p class="text-sm text-primary-400 mb-2">Siswa Terpilih</p>
-          <div class="flex items-center gap-3">
+          <div  class="flex items-center gap-3">
             <div
               class="w-12 h-12 bg-gradient-to-br from-accent-500 to-primary-500 rounded-full flex items-center justify-center font-bold"
             >
-              S
+              {{ userActive?.name[0] }}
             </div>
             <div>
-              <p class="font-medium">Siti Aminah</p>
-              <p class="text-sm text-slate-400">NISN: 0012345679</p>
+              <p class="font-medium">{{ userActive?.name }}</p>
+              <p class="text-sm text-slate-400">NISN: {{ userActive?.nisn }}</p>
             </div>
           </div>
         </div>
@@ -156,11 +173,12 @@
           <p class="text-sm text-slate-400 mb-3">Input UID Manual</p>
           <div class="flex gap-2">
             <input
+            v-model="uidInput"
               type="text"
               placeholder="Contoh: A1B2C3D4"
               class="flex-1 px-4 py-3 bg-dark-card border border-dark-border rounded-xl uppercase font-mono focus:border-primary-500 focus:outline-none"
             />
-            <button class="px-4 py-3 bg-primary-500 rounded-xl font-medium hover:opacity-90">
+            <button @click="updateRfid(userActive?.id)" class="px-4 py-3 bg-primary-500 rounded-xl font-medium hover:opacity-90">
               Terapkan
             </button>
           </div>

@@ -1,6 +1,8 @@
 import AdminBooks from '@/pages/Admin/AdminBooks.vue'
 import AdminIndex from '@/pages/Admin/AdminIndex.vue'
+import AdminKiosk from '@/pages/Admin/AdminKiosk.vue'
 import AdminLayout from '@/pages/Admin/AdminLayout.vue'
+import AdminLoginKiosk from '@/pages/Admin/AdminLoginKiosk.vue'
 import AdminRfid from '@/pages/Admin/AdminRfid.vue'
 import AdminTransactions from '@/pages/Admin/AdminTransactions.vue'
 import AdminUsers from '@/pages/Admin/AdminUsers.vue'
@@ -30,6 +32,16 @@ const router = createRouter({
       path: '/register-student',
       component: RegisterStudent,
       name: 'RegisterStudent',
+    },
+    {
+      path: '/login_kiosk',
+      component: AdminLoginKiosk,
+      name: 'AdminLoginKiosk',
+    },
+    {
+      path: '/index_kiosk',
+      component: AdminKiosk,
+      name: 'AdminKiosk',
     },
     {
       path: '/student',
@@ -63,30 +75,30 @@ const router = createRouter({
         {
           path: 'index',
           component: AdminIndex,
-          name: 'AdminIndex'
+          name: 'AdminIndex',
         },
         {
           path: 'books',
           component: AdminBooks,
-          name: 'AdminBooks'
+          name: 'AdminBooks',
         },
         {
           path: 'users',
           component: AdminUsers,
-          name: 'AdminUsers'
+          name: 'AdminUsers',
         },
         {
           path: 'transactions',
           component: AdminTransactions,
-          name: 'AdminTransactions'
+          name: 'AdminTransactions',
         },
         {
           path: 'rfid',
           component: AdminRfid,
-          name: 'AdminRfid'
+          name: 'AdminRfid',
         },
-      ]
-    }
+      ],
+    },
   ],
 })
 
