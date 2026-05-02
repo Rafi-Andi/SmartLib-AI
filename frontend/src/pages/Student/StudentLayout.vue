@@ -16,14 +16,14 @@ if (!token) {
   <router-view></router-view>
 
   <nav
-    class="fixed bottom-0 left-0 right-0 bg-dark-card/90 backdrop-blur-lg border-t border-dark-border"
+    class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-slate-200"
   >
     <div class="flex items-center justify-around py-3">
       <router-link :to="{ name: 'StudentIndex' }" v-slot="{ isActive }">
         <div
           :class="[
             'flex flex-col items-center transition-all duration-300',
-            isActive ? 'text-primary-400 scale-110' : 'text-slate-400 hover:text-slate-300',
+            isActive ? 'text-primary-400 scale-110' : 'text-slate-600 hover:text-slate-600',
           ]"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@ if (!token) {
         <div
           :class="[
             'flex flex-col items-center transition-all duration-300 relative',
-            isActive ? 'text-primary-400 scale-110' : 'text-slate-400 hover:text-slate-300',
+            isActive ? 'text-primary-400 scale-110' : 'text-slate-600 hover:text-slate-600',
           ]"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,7 +61,7 @@ if (!token) {
         <div
           :class="[
             'flex flex-col items-center transition-all duration-300',
-            isActive ? 'text-primary-400 scale-110' : 'text-slate-400 hover:text-slate-300',
+            isActive ? 'text-primary-400 scale-110' : 'text-slate-600 hover:text-slate-600',
           ]"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

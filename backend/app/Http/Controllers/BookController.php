@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class BookController
 {
@@ -48,7 +51,10 @@ class BookController
             'publisher' => ['nullable', 'string', 'max:255'],
             'year_published' => ['nullable', 'integer', 'min:1900', 'max:' . now()->year],
             'category' =>  ['nullable', 'string', 'max:100'],
-            'stock_count' => ['required', 'integer', 'min:1']
+            'stock_count' => ['required', 'integer', 'min:1'],
+            'summary' => ['nullable', 'string'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'cover_url' => ['nullable', 'url'],
         ]);
 
         $user = $request->user();
@@ -59,15 +65,31 @@ class BookController
             ], 401);
         }
 
+        $coverPath = null;
+        if ($request->hasFile('cover_image')) {
+            $coverPath = $request->file('cover_image')->store('book-covers', 'public');
+        } elseif ($request->cover_url) {
+            try {
+                $imageContent = Http::get($request->cover_url)->body();
+                $filename = 'book-covers/' . Str::random(40) . '.jpg';
+                Storage::disk('public')->put($filename, $imageContent);
+                $coverPath = $filename;
+            } catch (\Exception $e) {
+            }
+        }
+
         $book = Book::create([
             "school_id" => $user->school->id,
             "title" => $validated['title'],
-            "isbn" => $validated['isbn'],
-            "publisher" => $validated['publisher'],
-            "year_published" => $validated['year_published'],
-            "category" => $validated['category'],
+            "author" => $validated['author'] ?? null,
+            "isbn" => $validated['isbn'] ?? null,
+            "publisher" => $validated['publisher'] ?? null,
+            "year_published" => $validated['year_published'] ?? null,
+            "category" => $validated['category'] ?? null,
+            "summary" => $validated['summary'] ?? null,
             "stock_count" => $validated['stock_count'],
             "available_count" => $validated['stock_count'],
+            "cover_img" => $coverPath,
         ]);
 
         return response()->json([
@@ -143,8 +165,32 @@ class BookController
             'publisher' => ['nullable', 'string', 'max:255'],
             'year_published' => ['nullable', 'integer', 'min:1900', 'max:' . now()->year],
             'category' =>  ['nullable', 'string', 'max:100'],
-            'stock_count' => ['nullable', 'integer', 'min:1']
+            'stock_count' => ['nullable', 'integer', 'min:1'],
+            'summary' => ['nullable', 'string'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'cover_url' => ['nullable', 'url'],
         ]);
+
+        if ($request->hasFile('cover_image')) {
+            if ($book->cover_img) {
+                Storage::disk('public')->delete($book->cover_img);
+            }
+            $data['cover_img'] = $request->file('cover_image')->store('book-covers', 'public');
+        } elseif ($request->cover_url) {
+            try {
+                if ($book->cover_img) {
+                    Storage::disk('public')->delete($book->cover_img);
+                }
+                $imageContent = Http::get($request->cover_url)->body();
+                $filename = 'book-covers/' . Str::random(40) . '.jpg';
+                Storage::disk('public')->put($filename, $imageContent);
+                $data['cover_img'] = $filename;
+            } catch (\Exception $e) {
+                // Silently fail
+            }
+        }
+
+        unset($data['cover_image']);
 
         if (array_key_exists('stock_count', $data)) {
             $borrowed = $book->borrowed_count;
@@ -194,6 +240,10 @@ class BookController
             ], 400);
         }
 
+        if ($book->cover_img) {
+            Storage::disk('public')->delete($book->cover_img);
+        }
+
         $book->delete();
 
         return response()->json([
@@ -210,5 +260,83 @@ class BookController
             "message" => "berhasil mendapatkan kategori",
             "categories" => $categories
         ], 200);
+    }
+    public function aiExtract(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:2048',
+        ]);
+
+        $apiKey = env('GEMINI_API_KEY');
+        if (!$apiKey || $apiKey === 'your_gemini_api_key_here') {
+            return response()->json(['message' => 'API Key Gemini belum diatur di file .env'], 500);
+        }
+
+        $image = $request->file('image');
+        $base64Image = base64_encode(file_get_contents($image->getRealPath()));
+
+        $prompt = "Extract book metadata from this cover image. Return only a JSON object with these keys: title, author, isbn, publisher, year_published, category, summary. Use empty strings for unknown values.";
+
+        try {
+            $apiKey = trim($apiKey);
+            
+            $response = Http::withHeaders([
+                'x-goog-api-key' => $apiKey,
+                'Content-Type' => 'application/json',
+            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent", [
+                "contents" => [
+                    [
+                        "parts" => [
+                            ["text" => $prompt],
+                            [
+                                "inline_data" => [
+                                    "mime_type" => "image/jpeg",
+                                    "data" => $base64Image
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+
+            if ($response->failed()) {
+                $errorData = $response->json();
+                return response()->json([
+                    "message" => "AI tetap gagal diakses.",
+                    "details" => [
+                        "Error: " . ($errorData['error']['message'] ?? 'Unknown'),
+                        "Status: " . ($errorData['error']['status'] ?? 'Unknown'),
+                        "Code: " . $response->status()
+                    ]
+                ], 500);
+            }
+
+            $successResponse = $response->json();
+            $text = $successResponse['candidates'][0]['content']['parts'][0]['text'] ?? '{}';
+            
+            $firstBrace = strpos($text, '{');
+            $lastBrace = strrpos($text, '}');
+            if ($firstBrace !== false && $lastBrace !== false) {
+                $text = substr($text, $firstBrace, $lastBrace - $firstBrace + 1);
+            }
+            
+            $data = json_decode($text, true);
+
+            if (!$data || !isset($data['title'])) {
+                return response()->json([
+                    "message" => "AI tidak dapat mengenali informasi buku. Coba ambil foto yang lebih jelas."
+                ], 422);
+            }
+
+            return response()->json([
+                "message" => "Metadata berhasil diekstrak oleh AI",
+                "data" => $data
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                "message" => "Terjadi kesalahan sistem: " . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -1,18 +1,15 @@
 @import 'tailwindcss';
 body {
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+  background: #f8fafc;
+  color: #1e293b;
   min-height: 100vh;
 }
-.text-gradient {
-  background: linear-gradient(135deg, #6366f1, #22d3ee);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+
 
 @theme {
-  --color-primary-400: #818cf8;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
 
   --color-accent-400: #22d3ee;
   --color-accent-500: #06b6d4;
@@ -21,8 +18,8 @@ body {
   --color-warning-500: #f59e0b;
   --color-error-500: #ef4444;
 
-  --color-dark-bg: #0a0a0f;
-  --color-dark-card: #12121a;
-  --color-dark-border: #1e1e2e;
-  --color-dark-hover: #1a1a28;
+  --color-dark-bg: #f8fafc;
+  --color-dark-card: #ffffff;
+  --color-dark-border: #e2e8f0;
+  --color-dark-hover: #f1f5f9;
 }

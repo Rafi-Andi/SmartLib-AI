@@ -46,7 +46,7 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <section class="text-white flex items-center justify-center p-4">
+  <section class="text-slate-800 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
       <div class="text-center mb-8">
         <div class="inline-flex items-center gap-3 mb-4">
@@ -64,19 +64,19 @@ const handleLogin = async () => {
             />
           </svg>
         </div>
-        <h1 class="text-3xl font-bold">LibSmart <span class="text-gradient">AI</span></h1>
-        <p class="text-slate-400 mt-2">Sistem Perpustakaan Cerdas</p>
+        <h1 class="text-3xl font-bold">LibSmart <span class="text-primary-600">AI</span></h1>
+        <p class="text-slate-600 mt-2">Sistem Perpustakaan Cerdas</p>
       </div>
 
-      <div class="bg-dark-card border border-dark-border rounded-2xl p-8 glow">
+      <div class="bg-white border border-slate-200 rounded-2xl p-8">
         <h2 class="text-xl font-bold mb-6 text-center">Masuk ke Akun</h2>
 
         <form class="space-y-5" @submit.prevent="handleLogin()">
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Email</label>
+            <label class="block text-sm text-slate-600 mb-2">Email</label>
             <div class="relative">
               <svg
-                class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -92,17 +92,17 @@ const handleLogin = async () => {
                 v-model="formLogin.email"
                 type="email"
                 placeholder="admin@sekolah.com"
-                class="w-full pl-12 pr-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
               <p style="color: red">{{ errorMessages?.email?.[0] }}</p>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Password</label>
+            <label class="block text-sm text-slate-600 mb-2">Password</label>
             <div class="relative">
               <svg
-                class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -118,7 +118,7 @@ const handleLogin = async () => {
                 v-model="formLogin.password"
                 type="password"
                 placeholder="••••••••"
-                class="w-full pl-12 pr-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
               <p style="color: red">{{ errorMessages?.email?.[0] }}</p>
             </div>
@@ -126,7 +126,7 @@ const handleLogin = async () => {
 
           <button
             type="submit"
-            class="w-full py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            class="w-full py-3 bg-primary-600 rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-white"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -141,15 +141,15 @@ const handleLogin = async () => {
         </form>
 
         <div class="flex items-center my-6">
-          <div class="flex-1 border-t border-dark-border"></div>
-          <span class="px-4 text-slate-500 text-sm">atau</span>
-          <div class="flex-1 border-t border-dark-border"></div>
+          <div class="flex-1 border-t border-slate-200"></div>
+          <span class="px-4 text-slate-600 text-sm">atau</span>
+          <div class="flex-1 border-t border-slate-200"></div>
         </div>
 
         <div class="space-y-3">
           <router-link
             :to="{ name: 'RegisterStudent' }"
-            class="w-full py-3 border border-dark-border rounded-xl font-medium hover:bg-dark-bg transition-colors flex items-center justify-center gap-2"
+            class="w-full py-3 border border-slate-200 rounded-xl font-medium hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
           >
             <svg
               class="w-5 h-5 text-primary-400"
@@ -184,7 +184,7 @@ const handleLogin = async () => {
         </div>
       </div>
 
-      <p class="text-center text-slate-500 text-sm mt-8">
+      <p class="text-center text-slate-600 text-sm mt-8">
         © 2026 LibSmart AI - Sistem Perpustakaan Cerdas
       </p>
     </div>

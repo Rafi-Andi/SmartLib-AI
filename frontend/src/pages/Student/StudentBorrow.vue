@@ -26,12 +26,17 @@ watch(statusActive, () => {
   fetchBorrows()
 })
 const name = localStorage.getItem('name')
+
+const defaultCover = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200'
+const getBookCover = (book) => {
+  return book?.cover_image_url || defaultCover
+}
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col pb-20 text-white">
+  <div class="min-h-screen flex flex-col pb-20 text-slate-800">
     <header
-      class="sticky top-0 z-50 bg-dark-card/90 backdrop-blur-lg border-b border-dark-border p-4"
+      class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200 p-4"
     >
       <div class="flex items-center justify-between">
         <div>
@@ -39,20 +44,20 @@ const name = localStorage.getItem('name')
         </div>
         <router-link
           :to="{ name: 'StudentProfile' }"
-          class="w-8 h-8 bg-linear-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center text-sm font-bold"
+          class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-sm font-bold text-white"
         >
           {{ name[0] }}
         </router-link>
       </div>
     </header>
 
-    <div class="flex gap-2 p-4 bg-dark-bg">
+    <div class="flex gap-2 p-4 bg-slate-50">
       <button
         @click="statusActive = 'borrowed'"
         :class="
           statusActive === 'borrowed'
             ? 'bg-primary-500/10 text-primary-400 border border-primary-500/30'
-            : 'bg-dark-card border border-dark-border text-slate-400'
+            : 'bg-white border border-slate-200 text-slate-600'
         "
         class="flex-1 py-3 rounded-xl font-medium text-sm"
       >
@@ -63,7 +68,7 @@ const name = localStorage.getItem('name')
         :class="
           statusActive === 'returned'
             ? 'bg-primary-500/10 text-primary-400 border border-primary-500/30'
-            : 'bg-dark-card border border-dark-border text-slate-400'
+            : 'bg-white border border-slate-200 text-slate-600'
         "
         class="flex-1 py-3 rounded-xl text-sm"
       >
@@ -75,16 +80,15 @@ const name = localStorage.getItem('name')
       <div v-if="statusActive === 'borrowed'">
         <h2 class="font-bold text-lg mb-4">Aktif Peminjaman</h2>
 
-        <!-- Pesan jika data kosong -->
-        <p class="text-center text-slate-500 py-10" v-if="dataBorrows && dataBorrows.length === 0">
+        <p class="text-center text-slate-600 py-10" v-if="dataBorrows && dataBorrows.length === 0">
           Tidak ada peminjaman aktif
         </p>
 
         <div
           v-for="(item, index) in dataBorrows"
           :key="index"
-          :class="item?.days_late > 0 ? 'border-error-500/50' : 'border-dark-border'"
-          class="bg-dark-card border rounded-2xl overflow-hidden mb-4"
+          :class="item?.days_late > 0 ? 'border-error-500/50' : 'border-slate-200'"
+          class="bg-white border rounded-2xl overflow-hidden mb-4"
         >
 
           <div
@@ -112,27 +116,24 @@ const name = localStorage.getItem('name')
 
           <div class="flex gap-4 p-4">
             <div
-              class="w-20 h-28 bg-primary-500/10 rounded-xl overflow-hidden shrink-0 border border-dark-border"
+              class="w-20 h-28 bg-primary-500/10 rounded-xl overflow-hidden shrink-0 border border-slate-200"
             >
               <img
-                :src="
-                  item?.book?.cover_url ||
-                  'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=150'
-                "
+                :src="getBookCover(item?.book)"
                 class="w-full h-full object-cover"
               />
             </div>
             <div class="flex-1">
               <h3 class="font-bold">{{ item?.book?.title }}</h3>
-              <p class="text-sm text-slate-400 mb-3">{{ item?.book?.author }}</p>
+              <p class="text-sm text-slate-600 mb-3">{{ item?.book?.author }}</p>
 
               <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
-                  <span class="text-slate-400">Tanggal Pinjam</span>
+                  <span class="text-slate-600">Tanggal Pinjam</span>
                   <span>{{ formatDate(item?.borrowed_at) }}</span>
                 </div>
                 <div class="flex justify-between">
-                  <span class="text-slate-400">Batas Kembali</span>
+                  <span class="text-slate-600">Batas Kembali</span>
                   <span
                     :class="
                       item?.days_late > 0 ? 'text-error-500 line-through' : 'text-warning-500'
@@ -148,9 +149,9 @@ const name = localStorage.getItem('name')
 
           <div class="px-4 pb-4" v-if="item?.days_late === 0">
             <div
-              class="flex items-center justify-between text-xs p-2 bg-dark-bg rounded-lg border border-dark-border"
+              class="flex items-center justify-between text-xs p-2 bg-slate-50 rounded-lg border border-slate-200"
             >
-              <span class="text-slate-400">Sisa waktu</span>
+              <span class="text-slate-600">Sisa waktu</span>
               <span class="text-warning-500 font-bold">{{ item?.days_remaining }} hari lagi</span>
             </div>
           </div>
@@ -164,22 +165,29 @@ const name = localStorage.getItem('name')
           <div
             v-for="(item, index) in dataBorrows"
             :key="index"
-            class="bg-dark-card border border-dark-border rounded-xl p-4 flex items-center gap-4"
+            :class="item?.days_late > 0 ? 'border-error-500/50' : 'border-slate-200'"
+            class="bg-white border rounded-xl p-4 flex items-center gap-4"
           >
-            <div class="w-12 h-16 bg-success-500/20 rounded-lg overflow-hidden">
+            <div :class="item?.days_late > 0 ? 'bg-error-500/20' : 'bg-success-500/20'" class="w-12 h-16 rounded-lg overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=100"
+                :src="getBookCover(item?.book)"
                 class="w-full h-full object-cover"
               />
             </div>
             <div class="flex-1">
               <h3 class="font-medium">{{ item?.book?.title }}</h3>
-              <p class="text-xs text-slate-400">{{ item?.book?.author }}</p>
-              <p class="text-xs text-success-500 mt-1">
+              <p class="text-xs text-slate-600">{{ item?.book?.author }}</p>
+              <p v-if="item?.days_late > 0" class="text-xs text-error-500 font-medium mt-1">
+                Terlambat {{ item?.days_late }} hari · Denda: {{ formatRupiah(item?.fine_amount || item?.days_late * 1000) }}
+              </p>
+              <p class="text-xs mt-1" :class="item?.days_late > 0 ? 'text-slate-500' : 'text-success-500'">
                 Dikembalikan: {{ formatDate(item?.returned_at) }}
               </p>
             </div>
-            <span class="px-2 py-1 bg-success-500/20 text-success-500 rounded-full text-xs"
+            <span v-if="item?.days_late > 0" class="px-2 py-1 bg-error-500/20 text-error-500 rounded-full text-xs"
+              >Terlambat</span
+            >
+            <span v-else class="px-2 py-1 bg-success-500/20 text-success-500 rounded-full text-xs"
               >Selesai</span
             >
           </div>

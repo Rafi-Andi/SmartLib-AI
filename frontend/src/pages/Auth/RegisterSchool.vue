@@ -47,11 +47,11 @@ const handleRegister = async () => {
 </script>
 
 <template>
-  <section class="text-white py-8 px-4">
+  <section class="text-slate-800 py-8 px-4">
     <div class="max-w-2xl mx-auto">
       <router-link
         :to="{ name: 'Login' }"
-        class="inline-flex items-center gap-2 text-slate-400 hover:text-white mb-6"
+        class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800 mb-6"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -83,15 +83,15 @@ const handleRegister = async () => {
           </svg>
         </div>
         <h1 class="text-3xl font-bold">Daftarkan Sekolah</h1>
-        <p class="text-slate-400 mt-2">Mulai gunakan LibSmart AI di perpustakaan sekolah Anda</p>
+        <p class="text-slate-600 mt-2">Mulai gunakan LibSmart AI di perpustakaan sekolah Anda</p>
       </div>
 
-      <div class="bg-dark-card border border-dark-border rounded-2xl p-8">
+      <div class="bg-white border border-slate-200 rounded-2xl p-8">
         <form class="space-y-8" @submit.prevent="handleRegister">
           <div>
             <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
               <span
-                class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-sm"
+                class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-sm text-white"
                 >1</span
               >
               Informasi Sekolah
@@ -99,35 +99,35 @@ const handleRegister = async () => {
 
             <div class="grid gap-4">
               <div>
-                <label class="block text-sm text-slate-400 mb-2">Nama Sekolah *</label>
+                <label class="block text-sm text-slate-600 mb-2">Nama Sekolah *</label>
                 <input
                   v-model="formRegister.school_name"
                   type="text"
                   required
                   placeholder="Contoh: SMA Negeri 1 Jakarta"
-                  class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
                 />
                 <p style="color: red">{{ errorMessages?.school_name?.[0] }}</p>
               </div>
 
               <div>
-                <label class="block text-sm text-slate-400 mb-2">Alamat</label>
+                <label class="block text-sm text-slate-600 mb-2">Alamat</label>
                 <textarea
                   v-model="formRegister.school_address"
                   placeholder="Alamat lengkap sekolah"
                   rows="2"
-                  class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none resize-none"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none resize-none"
                 ></textarea>
                 <p style="color: red">{{ errorMessages?.school_address?.[0] }}</p>
               </div>
 
               <div>
-                <label class="block text-sm text-slate-400 mb-2">Telepon</label>
+                <label class="block text-sm text-slate-600 mb-2">Telepon</label>
                 <input
                   v-model="formRegister.school_phone"
                   type="tel"
                   placeholder="021-12345678"
-                  class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
                 />
                 <p style="color: red">{{ errorMessages?.school_phone?.[0] }}</p>
               </div>
@@ -145,48 +145,48 @@ const handleRegister = async () => {
 
             <div class="grid gap-4">
               <div>
-                <label class="block text-sm text-slate-400 mb-2">Nama Admin *</label>
+                <label class="block text-sm text-slate-600 mb-2">Nama Admin *</label>
                 <input
                   v-model="formRegister.admin_name"
                   type="text"
                   required
                   placeholder="Nama petugas perpustakaan"
-                  class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
                 />
                 <p style="color: red">{{ errorMessages?.admin_name?.[0] }}</p>
               </div>
 
               <div>
-                <label class="block text-sm text-slate-400 mb-2">Email Admin *</label>
+                <label class="block text-sm text-slate-600 mb-2">Email Admin *</label>
                 <input
                   required
                   v-model="formRegister.admin_email"
                   type="email"
                   placeholder="admin@sekolah.sch.id"
-                  class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
                 />
                 <p style="color: red">{{ errorMessages?.admin_email?.[0] }}</p>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm text-slate-400 mb-2">Password *</label>
+                  <label class="block text-sm text-slate-600 mb-2">Password *</label>
                   <input
                     required
                     v-model="formRegister.password"
                     type="password"
                     placeholder="Minimal 6 karakter"
-                    class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
                   />
                   <p style="color: red">{{ errorMessages?.password?.[0] }}</p>
                 </div>
                 <div>
-                  <label class="block text-sm text-slate-400 mb-2">Konfirmasi Password *</label>
+                  <label class="block text-sm text-slate-600 mb-2">Konfirmasi Password *</label>
                   <input
                     v-model="formRegister.confirm_password"
                     type="password"
                     placeholder="Ulangi password"
-                    class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -195,7 +195,7 @@ const handleRegister = async () => {
 
           <button
             type="submit"
-            class="w-full py-4 cursor-pointer bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            class="w-full py-4 cursor-pointer bg-primary-600 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-white"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -212,7 +212,7 @@ const handleRegister = async () => {
 
       <div
         id="successState"
-        class="bg-dark-card border border-dark-border rounded-2xl p-8 text-center hidden"
+        class="bg-white border border-slate-200 rounded-2xl p-8 text-center hidden"
       >
         <div
           class="inline-flex items-center justify-center w-20 h-20 bg-success-500/20 rounded-full mb-6"
@@ -233,16 +233,16 @@ const handleRegister = async () => {
         </div>
 
         <h2 class="text-2xl font-bold mb-2">Sekolah Berhasil Didaftarkan!</h2>
-        <p class="text-slate-400 mb-6">Simpan kode referral berikut untuk registrasi siswa</p>
+        <p class="text-slate-600 mb-6">Simpan kode referral berikut untuk registrasi siswa</p>
 
-        <div class="bg-dark-bg border-2 border-dashed border-primary-500 rounded-xl p-6 mb-6">
-          <p class="text-sm text-slate-400 mb-2">Kode Referral</p>
+        <div class="bg-slate-50 border-2 border-dashed border-primary-500 rounded-xl p-6 mb-6">
+          <p class="text-sm text-slate-600 mb-2">Kode Referral</p>
           <p class="text-4xl font-mono font-bold text-primary-400 tracking-widest">SMAN1JKT</p>
         </div>
 
         <div class="flex gap-4">
           <button
-            class="flex-1 py-3 border border-dark-border rounded-xl hover:bg-dark-bg transition-colors flex items-center justify-center gap-2"
+            class="flex-1 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -256,7 +256,7 @@ const handleRegister = async () => {
           </button>
           <a
             href="login.html"
-            class="flex-1 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold flex items-center justify-center gap-2"
+            class="flex-1 py-3 bg-primary-600 rounded-xl font-semibold flex items-center justify-center gap-2 text-white"
           >
             Masuk Dashboard
           </a>

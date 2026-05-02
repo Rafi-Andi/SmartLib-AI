@@ -19,8 +19,9 @@ class KioskController
             ->where('status', 'borrowed')->count(),
         ];
         $books = Book::where('school_id', $user->school_id)
+            ->where("available_count", ">", 0)
         ->latest()
-        ->take(6) 
+        ->take(6)
         ->get();
 
         $activeTransactions = Transaction::with('book') 

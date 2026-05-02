@@ -29,6 +29,7 @@ class TransactionResource extends JsonResource
             "book" => [
                 "title" => $this->book->title,
                 "author" => $this->book->author,
+                "cover_image_url" => $this->book->cover_image_url,
             ]
         ];
     }

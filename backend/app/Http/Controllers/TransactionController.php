@@ -147,6 +147,8 @@ class TransactionController
                 "due_at" => $dueAt,
             ]);
 
+            $book->decrement('available_count');
+
             return response()->json([
                 "message" => "Berhasil pinjam buku",
                 "transaction" => $transaction
@@ -190,6 +192,11 @@ class TransactionController
                 "status" => "returned",
                 "fine_amount" => $transaction->days_late * 1000,
             ]);
+
+            $transaction->book->increment('available_count');
+
+            $transaction->load(['book', 'user', 'school']);
+
             return response()->json([
                 "message" => $message,
                 "data" => [
@@ -198,10 +205,18 @@ class TransactionController
                     "status" => $transaction->status,
                     "fine_amount" => $transaction->fine_amount,
                     "days_late" => $transaction->days_late,
+                    "book_title" => $transaction->book->title,
+                    "book_author" => $transaction->book->author,
+                    "student_name" => $transaction->user->name,
+                    "student_nisn" => $transaction->user->nisn,
+                    "school_name" => $transaction->school->name ?? 'SmartLib AI Library'
                 ]
             ], 200);
-        } catch (\Throwable $th) {
-            //throw $th;
+        } catch (\Exception $e) {
+            return response()->json([
+                "message" => "Terjadi kesalahan saat memproses pengembalian",
+                "error" => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -215,7 +230,9 @@ class TransactionController
             })->when($request->status === 'returned', function ($q) {
                 $q->where('status', 'returned');
             })
-            ->where('user_id', $user->id)->get();
+            ->where('user_id', $user->id)
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         return response()->json([
             "message" => 'berhasil mendapatkan data',

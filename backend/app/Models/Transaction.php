@@ -18,6 +18,11 @@ class Transaction extends Model
         return $this->belongsTo(Book::class);
     }
 
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
+
     protected $appends = ['days_late'];
 
     public function getDaysLateAttribute()

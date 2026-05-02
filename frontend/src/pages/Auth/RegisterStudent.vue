@@ -44,11 +44,11 @@ const handleRegister = async () => {
 </script>
 
 <template>
-  <section class="text-white flex items-center justify-center p-4">
+  <section class="text-slate-800 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
       <router-link
         :to="{ name: 'Login' }"
-        class="inline-flex items-center gap-2 text-slate-400 hover:text-white mb-6"
+        class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800 mb-6"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -61,83 +61,83 @@ const handleRegister = async () => {
         Kembali ke Login
       </router-link>
 
-      <div class="bg-dark-card border border-dark-border rounded-2xl p-8">
+      <div class="bg-white border border-slate-200 rounded-2xl p-8">
         <div class="text-center mb-6">
           <h1 class="text-2xl font-bold">Daftar Akun Siswa</h1>
-          <p class="text-slate-400 mt-2">Isi data untuk mendaftar perpustakaan</p>
+          <p class="text-slate-600 mt-2">Isi data untuk mendaftar perpustakaan</p>
         </div>
 
         <form class="space-y-4" @submit.prevent="handleRegister()">
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Kode Referral Sekolah *</label>
+            <label class="block text-sm text-slate-600 mb-2">Kode Referral Sekolah *</label>
             <input
               v-model="formRegister.referral_code"
               type="text"
               placeholder="Contoh: SMAN1JKT"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl uppercase tracking-widest text-center font-mono focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl uppercase tracking-widest text-center font-mono focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
             />
-            <p class="text-xs text-slate-500 mt-1">Minta kode referral ke petugas perpustakaan</p>
+            <p class="text-xs text-slate-600 mt-1">Minta kode referral ke petugas perpustakaan</p>
             <p style="color: red">{{ errorMessages?.referral_code?.[0] }}</p>
           </div>
 
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Nama Lengkap *</label>
+            <label class="block text-sm text-slate-600 mb-2">Nama Lengkap *</label>
             <input
               v-model="formRegister.name"
               type="text"
               placeholder="Nama sesuai kartu pelajar"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
             />
             <p style="color: red">{{ errorMessages?.name?.[0] }}</p>
           </div>
 
           <div>
-            <label class="block text-sm text-slate-400 mb-2">NISN</label>
+            <label class="block text-sm text-slate-600 mb-2">NISN</label>
             <input
               v-model="formRegister.nisn"
               type="text"
               placeholder="10 digit NISN"
               maxlength="10"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
             />
             <p style="color: red">{{ errorMessages?.nisn?.[0] }}</p>
           </div>
 
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Email *</label>
+            <label class="block text-sm text-slate-600 mb-2">Email *</label>
             <input
               v-model="formRegister.email"
               type="email"
               placeholder="email@siswa.com"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
             />
             <p style="color: red">{{ errorMessages?.email?.[0] }}</p>
           </div>
 
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Password *</label>
+            <label class="block text-sm text-slate-600 mb-2">Password *</label>
             <input
               v-model="formRegister.password"
               type="password"
               placeholder="Minimal 6 karakter"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
             />
             <p style="color: red">{{ errorMessages?.password?.[0] }}</p>
           </div>
 
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Konfirmasi Password *</label>
+            <label class="block text-sm text-slate-600 mb-2">Konfirmasi Password *</label>
             <input
               v-model="formRegister.password_confirmation"
               type="password"
               placeholder="Ulangi password"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
             />
           </div>
 
           <button
             type="submit"
-            class="w-full py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold hover:opacity-90 transition-opacity mt-6 flex items-center justify-center gap-2"
+            class="w-full py-3 bg-primary-600 rounded-xl font-semibold hover:opacity-90 transition-opacity mt-6 flex items-center justify-center gap-2 text-white"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -151,7 +151,7 @@ const handleRegister = async () => {
           </button>
         </form>
 
-        <p class="text-center text-sm text-slate-400 mt-6">
+        <p class="text-center text-sm text-slate-600 mt-6">
           Sudah punya akun?
           <router-link :to="{ name: 'Login' }" class="text-primary-400 hover:underline"
             >Masuk</router-link

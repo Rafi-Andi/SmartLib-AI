@@ -109,11 +109,11 @@ onMounted(() => {
     <div class="flex items-center justify-between mb-8">
       <div>
         <h1 class="text-3xl font-bold">Manajemen Pengguna</h1>
-        <p class="text-slate-400">Kelola siswa dan admin perpustakaan</p>
+        <p class="text-slate-600">Kelola siswa dan admin perpustakaan</p>
       </div>
       <button
         @click="isAddUser = true"
-        class="px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold flex items-center gap-2"
+        class="px-6 py-3 bg-primary-600 rounded-xl font-semibold flex items-center gap-2 text-white"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -133,7 +133,7 @@ onMounted(() => {
         :class="
           roleActive === ''
             ? 'bg-primary-500/10 text-primary-400 border-primary-500/30'
-            : 'bg-dark-card text-slate-400'
+            : 'bg-white text-slate-600'
         "
         class="px-6 py-3 border rounded-xl font-medium transition-all"
       >
@@ -144,7 +144,7 @@ onMounted(() => {
         :class="
           roleActive === 'student'
             ? 'bg-primary-500/10 text-primary-400 border-primary-500/30'
-            : 'bg-dark-card text-slate-400'
+            : 'bg-white text-slate-600'
         "
         class="px-6 py-3 border rounded-xl font-medium transition-all"
       >
@@ -155,7 +155,7 @@ onMounted(() => {
         :class="
           roleActive === 'admin'
             ? 'bg-primary-500/10 text-primary-400 border-primary-500/30'
-            : 'bg-dark-card text-slate-400'
+            : 'bg-white text-slate-600'
         "
         class="px-6 py-3 border rounded-xl font-medium transition-all"
       >
@@ -166,7 +166,7 @@ onMounted(() => {
     <div class="flex gap-4 mb-6">
       <div class="flex-1 relative">
         <svg
-          class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
+          class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -182,15 +182,15 @@ onMounted(() => {
           v-model="search"
           type="text"
           placeholder="Cari nama, email, atau NISN..."
-          class="w-full pl-12 pr-4 py-3 bg-dark-card border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+          class="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
         />
       </div>
     </div>
 
-    <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden">
+    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
       <table class="w-full">
-        <thead class="bg-dark-bg">
-          <tr class="text-left text-slate-400 text-sm">
+        <thead class="bg-slate-50">
+          <tr class="text-left text-slate-600 text-sm">
             <th class="px-6 py-4">Pengguna</th>
             <th class="px-6 py-4">NISN</th>
             <th class="px-6 py-4">Role</th>
@@ -199,18 +199,18 @@ onMounted(() => {
             <th class="px-6 py-4">Aksi</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-dark-border">
-          <tr class="hover:bg-dark-hover" v-for="(user, index) in dataUsers" :key="index">
+        <tbody class="divide-y divide-slate-200">
+          <tr class="hover:bg-slate-100" v-for="(user, index) in dataUsers" :key="index">
             <td class="px-6 py-4">
               <div class="flex items-center gap-3">
                 <div
-                  class="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center font-bold"
+                  class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center font-bold text-white"
                 >
                   {{ user?.name[0] }}
                 </div>
                 <div>
                   <p class="font-medium">{{ user?.name }}</p>
-                  <p class="text-sm text-slate-400">{{ user?.email }}</p>
+                  <p class="text-sm text-slate-600">{{ user?.email }}</p>
                 </div>
               </div>
             </td>
@@ -268,7 +268,7 @@ onMounted(() => {
                       formAddUser = user
                     }
                   "
-                  class="p-2 text-slate-400 hover:text-primary-400 hover:bg-dark-bg rounded-lg"
+                  class="p-2 text-slate-600 hover:text-primary-400 hover:bg-slate-50 rounded-lg"
                   title="Edit"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -282,7 +282,7 @@ onMounted(() => {
                 </button>
                 <button
                   @click="handleDelete(user?.id)"
-                  class="p-2 text-slate-400 hover:text-error-500 hover:bg-dark-bg rounded-lg"
+                  class="p-2 text-slate-600 hover:text-error-500 hover:bg-slate-50 rounded-lg"
                   title="Hapus"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -299,15 +299,15 @@ onMounted(() => {
           </tr>
         </tbody>
       </table>
-      <div class="flex items-center justify-between px-6 py-4 border-t border-dark-border">
-        <p class="text-sm text-slate-400">
+      <div class="flex items-center justify-between px-6 py-4 border-t border-slate-200">
+        <p class="text-sm text-slate-600">
           Menampilkan data ke-{{ (page - 1) * 10 + 1 }} (Total: {{ totalData }})
         </p>
         <div class="flex gap-2">
           <button
             @click="page--"
             :disabled="page <= 1"
-            class="px-4 py-2 border border-dark-border rounded-lg text-slate-400 disabled:opacity-30"
+            class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-30"
           >
             Sebelumnya
           </button>
@@ -317,8 +317,8 @@ onMounted(() => {
             @click="changePage(p)"
             :class="[
               page === p
-                ? 'bg-primary-500 text-white'
-                : 'border border-dark-border text-slate-400 hover:bg-dark-hover',
+                ? 'bg-primary-500 text-slate-800'
+                : 'border border-slate-200 text-slate-600 hover:bg-slate-100',
             ]"
             class="px-4 py-2 rounded-lg transition-colors"
           >
@@ -328,7 +328,7 @@ onMounted(() => {
           <button
             @click="page++"
             :disabled="page >= lastPage"
-            class="px-4 py-2 border border-dark-border rounded-lg text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed"
+            class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Selanjutnya
           </button>
@@ -343,9 +343,9 @@ onMounted(() => {
     class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
   >
     <div
-      class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+      class="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
     >
-      <div class="flex items-center justify-between p-6 border-b border-dark-border">
+      <div class="flex items-center justify-between p-6 border-b border-slate-200">
         <h2 class="text-xl font-bold">Tambah Pengguna Baru</h2>
         <button
           @click="
@@ -354,7 +354,7 @@ onMounted(() => {
               clearFormUser()
             }
           "
-          class="p-2 text-slate-400 hover:text-white"
+          class="p-2 text-slate-600 hover:text-slate-800"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -366,46 +366,45 @@ onMounted(() => {
           </svg>
         </button>
       </div>
-      <!-- Form -->
       <form @submit.prevent="handleAddUser" class="p-6 space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div class="col-span-2">
-            <label class="block text-sm text-slate-400 mb-2">Nama*</label>
+            <label class="block text-sm text-slate-600 mb-2">Nama*</label>
             <input
               v-model="formAddUser.name"
               type="text"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Email</label>
+            <label class="block text-sm text-slate-600 mb-2">Email</label>
             <input
               v-model="formAddUser.email"
               type="text"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Password</label>
+            <label class="block text-sm text-slate-600 mb-2">Password</label>
             <input
               v-model="formAddUser.password"
               type="text"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm text-slate-400 mb-2">NISN</label>
+            <label class="block text-sm text-slate-600 mb-2">NISN</label>
             <input
               v-model="formAddUser.nisn"
               type="text"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Role</label>
+            <label class="block text-sm text-slate-600 mb-2">Role</label>
             <select
               v-model="formAddUser.role"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             >
               <option value="">Pilih role</option>
               <option value="student">Student</option>
@@ -423,13 +422,13 @@ onMounted(() => {
               }
             "
             type="button"
-            class="flex-1 py-3 border border-dark-border rounded-xl hover:bg-dark-hover"
+            class="flex-1 py-3 border border-slate-200 rounded-xl hover:bg-slate-100"
           >
             Batal
           </button>
           <button
             type="submit"
-            class="flex-1 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold"
+            class="flex-1 py-3 bg-primary-600 rounded-xl font-semibold text-white"
           >
             Simpan Pengguna
           </button>
@@ -443,9 +442,9 @@ onMounted(() => {
     class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
   >
     <div
-      class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+      class="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
     >
-      <div class="flex items-center justify-between p-6 border-b border-dark-border">
+      <div class="flex items-center justify-between p-6 border-b border-slate-200">
         <h2 class="text-xl font-bold">Edit Pengguna</h2>
         <button
           @click="
@@ -454,7 +453,7 @@ onMounted(() => {
               clearFormUser()
             }
           "
-          class="p-2 text-slate-400 hover:text-white"
+          class="p-2 text-slate-600 hover:text-slate-800"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -466,39 +465,38 @@ onMounted(() => {
           </svg>
         </button>
       </div>
-      <!-- Form -->
       <form @submit.prevent="handleEditUser" class="p-6 space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div class="col-span-2">
-            <label class="block text-sm text-slate-400 mb-2">Nama*</label>
+            <label class="block text-sm text-slate-600 mb-2">Nama*</label>
             <input
               v-model="formAddUser.name"
               type="text"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Email</label>
+            <label class="block text-sm text-slate-600 mb-2">Email</label>
             <input
               v-model="formAddUser.email"
               type="text"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             />
           </div>
 
           <div>
-            <label class="block text-sm text-slate-400 mb-2">NISN</label>
+            <label class="block text-sm text-slate-600 mb-2">NISN</label>
             <input
               v-model="formAddUser.nisn"
               type="text"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Role</label>
+            <label class="block text-sm text-slate-600 mb-2">Role</label>
             <select
               v-model="formAddUser.role"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             >
               <option value="">Pilih role</option>
               <option value="student">Student</option>
@@ -506,11 +504,11 @@ onMounted(() => {
             </select>
           </div>
           <div>
-            <label class="block text-sm text-slate-400 mb-2">Aktif</label>
+            <label class="block text-sm text-slate-600 mb-2">Aktif</label>
             <select
               v-model="formAddUser.is_active"
               type="text"
-              class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-xl focus:border-primary-500 focus:outline-none"
+              class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-primary-500 focus:outline-none"
             >
               <option :value="false">Tidak Aktif</option>
               <option :value="true">Aktif</option>
@@ -527,13 +525,13 @@ onMounted(() => {
               }
             "
             type="button"
-            class="flex-1 py-3 border border-dark-border rounded-xl hover:bg-dark-hover"
+            class="flex-1 py-3 border border-slate-200 rounded-xl hover:bg-slate-100"
           >
             Batal
           </button>
           <button
             type="submit"
-            class="flex-1 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl font-semibold"
+            class="flex-1 py-3 bg-primary-600 rounded-xl font-semibold text-white"
           >
             Simpan Pengguna
           </button>

@@ -26,11 +26,11 @@ onMounted(() => {
   <main class="flex-1 ml-64 p-8">
     <div class="mb-8">
       <h1 class="text-3xl font-bold mb-2">Dashboard</h1>
-      <p class="text-slate-400">Selamat datang kembali, Admin {{ dataAnalytics?.name }} !</p>
+      <p class="text-slate-600">Selamat datang kembali, Admin {{ dataAnalytics?.name }} !</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6">
         <div class="flex items-center justify-between mb-4">
           <div class="p-3 bg-primary-500/10 rounded-xl">
             <svg
@@ -49,10 +49,10 @@ onMounted(() => {
           </div>
         </div>
         <p class="text-3xl font-bold mb-1">{{ dataAnalytics?.books_count }}</p>
-        <p class="text-slate-400 text-sm">Total Buku</p>
+        <p class="text-slate-600 text-sm">Total Buku</p>
       </div>
 
-      <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6">
         <div class="flex items-center justify-between mb-4">
           <div class="p-3 bg-accent-500/10 rounded-xl">
             <svg
@@ -71,10 +71,10 @@ onMounted(() => {
           </div>
         </div>
         <p class="text-3xl font-bold mb-1">{{ dataAnalytics?.studentsCount }}</p>
-        <p class="text-slate-400 text-sm">Total Siswa</p>
+        <p class="text-slate-600 text-sm">Total Siswa</p>
       </div>
 
-      <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6">
         <div class="flex items-center justify-between mb-4">
           <div class="p-3 bg-warning-500/10 rounded-xl">
             <svg
@@ -93,10 +93,10 @@ onMounted(() => {
           </div>
         </div>
         <p class="text-3xl font-bold mb-1">{{ dataAnalytics?.borrowsActive }}</p>
-        <p class="text-slate-400 text-sm">Peminjaman Aktif</p>
+        <p class="text-slate-600 text-sm">Peminjaman Aktif</p>
       </div>
 
-      <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6">
         <div class="flex items-center justify-between mb-4">
           <div class="p-3 bg-error-500/10 rounded-xl">
             <svg
@@ -115,12 +115,12 @@ onMounted(() => {
           </div>
         </div>
         <p class="text-3xl font-bold text-error-500 mb-1">{{ dataAnalytics?.borrowsLate }}</p>
-        <p class="text-slate-400 text-sm">Terlambat</p>
+        <p class="text-slate-600 text-sm">Terlambat</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div class="lg:col-span-2 bg-dark-card border border-dark-border rounded-2xl p-6">
+      <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-bold">Transaksi Terbaru</h2>
           <router-link :to="{name: 'AdminTransactions'}" class="text-primary-400 text-sm hover:underline">Lihat Semua</router-link>
@@ -129,14 +129,14 @@ onMounted(() => {
         <div class="overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr class="text-left text-slate-400 text-sm border-b border-dark-border">
+              <tr class="text-left text-slate-600 text-sm border-b border-slate-200">
                 <th class="pb-4">Siswa</th>
                 <th class="pb-4">Buku</th>
                 <th class="pb-4">Status</th>
                 <th class="pb-4">Tanggal</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-dark-border">
+            <tbody class="divide-y divide-slate-200">
               <tr v-for="(item, index) in dataTransactions" :key="index">
                 <td class="py-4">
                   <div class="flex items-center gap-3">
@@ -148,7 +148,7 @@ onMounted(() => {
                     <span>{{ item?.user?.name }}</span>
                   </div>
                 </td>
-                <td class="py-4 text-slate-300">{{ item?.book?.title }}</td>
+                <td class="py-4 text-slate-600">{{ item?.book?.title }}</td>
                 <td class="py-4">
                   <span
                     v-if="item?.status === 'borrowed' && item?.days_late === 0  "
@@ -166,22 +166,22 @@ onMounted(() => {
                     >Terlambat</span
                   >
                 </td>
-                <td class="py-4 text-slate-400 text-sm">{{ formatDate(item?.borrowed_at) }}</td>
+                <td class="py-4 text-slate-600 text-sm">{{ formatDate(item?.borrowed_at) }}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <div class="bg-dark-card border border-dark-border rounded-2xl p-6">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6">
         <h2 class="text-xl font-bold mb-6">Aksi Cepat</h2>
 
         <div class="space-y-4">
           <button
             class="w-full flex items-center gap-4 p-4 bg-primary-500/10 border border-primary-500/30 rounded-xl hover:bg-primary-500/20 transition-colors text-left"
           >
-            <div class="p-3 bg-primary-500 rounded-lg">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-3 bg-primary-500 rounded-lg text-white">
+              <svg class="w-5 h-5 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -192,15 +192,15 @@ onMounted(() => {
             </div>
             <router-link :to="{name: 'AdminBooks'}">
               <p class="font-medium">Tambah Buku</p>
-              <p class="text-sm text-slate-400">Scan atau input manual</p>
+              <p class="text-sm text-slate-600">Scan atau input manual</p>
             </router-link>
           </button>
 
           <button
-            class="w-full flex items-center gap-4 p-4 bg-dark-hover border border-dark-border rounded-xl hover:border-primary-500/50 transition-colors text-left"
+            class="w-full flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-primary-500/50 transition-colors text-left"
           >
             <div class="p-3 bg-accent-500 rounded-lg">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -211,15 +211,15 @@ onMounted(() => {
             </div>
             <router-link :to="{name: 'AdminRfid'}">
               <p class="font-medium">Aktivasi RFID</p>
-              <p class="text-sm text-slate-400">Daftarkan kartu siswa</p>
+              <p class="text-sm text-slate-600">Daftarkan kartu siswa</p>
             </router-link>
           </button>
 
           <button
-            class="w-full flex items-center gap-4 p-4 bg-dark-hover border border-dark-border rounded-xl hover:border-primary-500/50 transition-colors text-left"
+            class="w-full flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-primary-500/50 transition-colors text-left"
           >
-            <div class="p-3 bg-success-500 rounded-lg">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-3 bg-success-500 rounded-lg text-white">
+              <svg class="w-5 h-5 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -230,14 +230,14 @@ onMounted(() => {
             </div>
             <div>
               <p class="font-medium">Proses Peminjaman</p>
-              <p class="text-sm text-slate-400">Buka mode kiosk</p>
+              <p class="text-sm text-slate-600">Buka mode kiosk</p>
             </div>
           </button>
         </div>
  
 
-        <div class="mt-6 p-4 bg-dark-bg rounded-xl">
-          <p class="text-sm text-slate-400 mb-1">Sekolah</p>
+        <div class="mt-6 p-4 bg-slate-50 rounded-xl">
+          <p class="text-sm text-slate-600 mb-1">Sekolah</p>
           <p class="font-medium">{{ dataAnalytics?.name }}</p>
           <p class="text-sm text-primary-400 mt-2">{{ dataAnalytics?.referral_code }}</p>
         </div>

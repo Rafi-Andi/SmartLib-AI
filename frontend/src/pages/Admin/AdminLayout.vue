@@ -27,16 +27,16 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <section class="flex min-h-screen text-white bg-dark">
-    <aside class="w-64 bg-dark-card border-r border-dark-border flex flex-col fixed h-full">
-      <div class="p-6 border-b border-dark-border">
+  <section class="flex min-h-screen text-slate-800 bg-slate-50">
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col fixed h-full">
+      <div class="p-6 border-b border-slate-200">
         <span class="text-xl font-bold text-primary-500">LibSmart</span>
       </div>
 
       <nav class="flex-1 p-4 space-y-2">
         <router-link
           :to="{ name: 'AdminIndex' }"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-400 hover:bg-dark-hover"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +52,7 @@ const handleLogout = async () => {
 
         <router-link
           :to="{ name: 'AdminBooks' }"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-400 hover:bg-dark-hover"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +68,7 @@ const handleLogout = async () => {
 
         <router-link
           :to="{ name: 'AdminUsers' }"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-400 hover:bg-dark-hover"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,7 +84,7 @@ const handleLogout = async () => {
 
         <router-link
           :to="{ name: 'AdminTransactions' }"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-400 hover:bg-dark-hover"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +100,7 @@ const handleLogout = async () => {
 
         <router-link
           :to="{ name: 'AdminRfid' }"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-400 hover:bg-dark-hover"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,10 +115,10 @@ const handleLogout = async () => {
         </router-link>
       </nav>
 
-      <div class="p-4 border-t border-dark-border">
+      <div class="p-4 border-t border-slate-200">
         <div class="flex items-center gap-3 text-sm">
           <div
-            class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center font-bold"
+            class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center font-bold text-white"
           >
             {{ name[0] }}
           </div>
@@ -146,10 +146,10 @@ const handleLogout = async () => {
 </template>
 <style scoped>
 body {
-  background: #0a0a0f;
+  background: #f8fafc;
 }
 
-.text-gradient {
+.text-primary-600 {
   background: linear-gradient(135deg, #6366f1, #22d3ee);
   -webkit-text-fill-color: transparent;
 }
@@ -158,10 +158,10 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #12121a;
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e1e2e;
+  background: #e2e8f0;
   border-radius: 3px;
 }
 </style>

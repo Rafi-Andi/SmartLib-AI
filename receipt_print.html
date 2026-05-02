@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struk Peminjaman - LibSmart AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            width: 58mm;
+            padding: 5mm;
+            background: white;
+            color: black;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 1px dashed black;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .header h1 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .header p {
+            font-size: 10px;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 8px 0;
+        }
+        
+        .section {
+            margin: 10px 0;
+            padding: 8px 0;
+        }
+        
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+        }
+        
+        .row .label {
+            color: #666;
+        }
+        
+        .book-title {
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .due-date {
+            text-align: center;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border: 2px solid black;
+        }
+        
+        .due-date .label {
+            font-size: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .due-date .date {
+            font-size: 16px;
+        }
+        
+        .footer {
+            text-align: center;
+            border-top: 1px dashed black;
+            padding-top: 10px;
+            margin-top: 15px;
+            font-size: 10px;
+        }
+        
+        .qr-placeholder {
+            width: 80px;
+            height: 80px;
+            border: 1px solid black;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+        
+        @media print {
+            body {
+                width: 58mm;
+            }
+            
+            @page {
+                size: 58mm auto;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>PERPUSTAKAAN</h1>
+        <p>SMA Negeri 1 Jakarta</p>
+        <p>Jl. Pendidikan No. 1</p>
+        <p>================================</p>
+    </div>
+
+    <!-- Transaction Info -->
+    <div class="section">
+        <div class="row">
+            <span class="label">No. Transaksi</span>
+            <span>#TRX-001234</span>
+        </div>
+        <div class="row">
+            <span class="label">Tanggal</span>
+            <span>13 Jan 2026</span>
+        </div>
+        <div class="row">
+            <span class="label">Waktu</span>
+            <span>07:30:15</span>
+        </div>
+    </div>
+
+    <div class="divider">- - - - - - - - - - - - - - -</div>
+
+    <!-- Borrower Info -->
+    <div class="section">
+        <div class="row">
+            <span class="label">Peminjam</span>
+        </div>
+        <div class="row">
+            <span>Budi Santoso</span>
+        </div>
+        <div class="row">
+            <span class="label">NISN</span>
+            <span>0012345678</span>
+        </div>
+        <div class="row">
+            <span class="label">Kelas</span>
+            <span>XII IPA 1</span>
+        </div>
+    </div>
+
+    <div class="divider">- - - - - - - - - - - - - - -</div>
+
+    <!-- Book Info -->
+    <div class="section">
+        <p class="label">Buku yang dipinjam:</p>
+        <p class="book-title">Laskar Pelangi</p>
+        <div class="row">
+            <span class="label">Penulis</span>
+            <span>Andrea Hirata</span>
+        </div>
+        <div class="row">
+            <span class="label">ISBN</span>
+            <span>978-979-1227-28-0</span>
+        </div>
+    </div>
+
+    <!-- Due Date Box -->
+    <div class="due-date">
+        <div class="label">BATAS PENGEMBALIAN</div>
+        <div class="date">20 JANUARI 2026</div>
+    </div>
+
+    <!-- Notes -->
+    <div class="section">
+        <p style="font-size: 10px; text-align: center;">
+            * Denda keterlambatan Rp 1.000/hari
+        </p>
+        <p style="font-size: 10px; text-align: center;">
+            * Jaga buku dengan baik
+        </p>
+    </div>
+
+    <!-- QR Code Placeholder -->
+    <div class="qr-placeholder">
+        [QR CODE]
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Terima kasih telah menggunakan</p>
+        <p>LibSmart AI</p>
+        <p>================================</p>
+        <p style="margin-top: 5px;">www.libsmart.ai</p>
+    </div>
+
+</body>
+</html>

@@ -67,11 +67,16 @@ watch(pageActive, () => {
 })
 
 const name = localStorage.getItem('name')
+
+const defaultCover = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200'
+const getBookCover = (book) => {
+  return book?.cover_image_url || defaultCover
+}
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col text-white">
-    <header class="sticky top-0 z-50 bg-dark-card/90 backdrop-blur-lg border-b border-dark-border">
+  <div class="min-h-screen flex flex-col text-slate-800">
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200">
       <div class="flex items-center justify-between p-4">
         <div class="flex items-center gap-2">
           <svg
@@ -92,7 +97,7 @@ const name = localStorage.getItem('name')
 
         <router-link
           :to="{ name: 'StudentProfile' }"
-          class="w-8 h-8 bg-linear-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center text-sm font-bold"
+          class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-sm font-bold text-white"
         >
           {{ name[0] }}
         </router-link>
@@ -101,7 +106,7 @@ const name = localStorage.getItem('name')
       <div class="px-4 pb-4">
         <div class="relative">
           <svg
-            class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -117,7 +122,7 @@ const name = localStorage.getItem('name')
             v-model="search"
             type="text"
             placeholder="Cari judul, penulis, atau ISBN..."
-            class="w-full pl-10 pr-4 py-3 bg-dark-bg border border-dark-border rounded-xl text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
           />
         </div>
       </div>
@@ -128,8 +133,8 @@ const name = localStorage.getItem('name')
             @click="activeCategory = ''"
             :class="
               activeCategory === ''
-                ? 'bg-primary-500 text-white'
-                : 'bg-dark-bg border border-dark-border text-slate-400'
+                ? 'bg-primary-500 text-slate-800'
+                : 'bg-slate-50 border border-slate-200 text-slate-600'
             "
             class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
           >
@@ -141,8 +146,8 @@ const name = localStorage.getItem('name')
             @click="activeCategory = item"
             :class="
               activeCategory === item
-                ? 'bg-primary-500 text-white'
-                : 'bg-dark-bg border border-dark-border text-slate-400'
+                ? 'bg-primary-500 text-slate-800'
+                : 'bg-slate-50 border border-slate-200 text-slate-600'
             "
             class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap hover:border-primary-500 hover:text-primary-400 transition-colors"
           >
@@ -171,16 +176,16 @@ const name = localStorage.getItem('name')
               :key="index"
             >
               <div
-                class="aspect-3/4 bg-linear-to-br from-primary-500/20 to-accent-500/20 rounded-xl overflow-hidden mb-2"
+                class="aspect-3/4 bg-primary-500/20 rounded-xl overflow-hidden mb-2"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200"
+                  :src="getBookCover(item)"
                   alt="Book Cover"
                   class="w-full h-full object-cover"
                 />
               </div>
               <h3 class="font-medium text-sm line-clamp-2">{{ item?.title }}</h3>
-              <p class="text-xs text-slate-400 mt-1">{{ item?.author }}</p>
+              <p class="text-xs text-slate-600 mt-1">{{ item?.author }}</p>
               <div class="flex items-center gap-1 mt-2">
                 <span
                   v-if="item?.available_count > 0"
@@ -204,18 +209,18 @@ const name = localStorage.getItem('name')
             v-for="(item, index) in dataAllBooks"
             :key="index"
             @click="bookDetail = item"
-            class="bg-dark-card border border-dark-border rounded-xl overflow-hidden"
+            class="bg-white border border-slate-200 rounded-xl overflow-hidden"
           >
-            <div class="aspect-3/4 bg-dark-bg">
+            <div class="aspect-3/4 bg-slate-50">
               <img
-                src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200"
+                :src="getBookCover(item)"
                 alt="Book"
                 class="w-full h-full object-cover"
               />
             </div>
             <div class="p-3">
               <h3 class="font-medium text-sm line-clamp-2 mb-1">{{ item?.title }}</h3>
-              <p class="text-xs text-slate-400 mb-2">{{ item?.author }}</p>
+              <p class="text-xs text-slate-600 mb-2">{{ item?.author }}</p>
               <div class="flex items-center justify-between">
                 <span
                   v-if="item?.available_count > 0"
@@ -233,7 +238,7 @@ const name = localStorage.getItem('name')
       <div class="flex items-center justify-center gap-2 mt-8">
         <button
           @click="pageActive--"
-          class="cursor-pointer px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-slate-400 hover:border-primary-500 hover:text-primary-400 disabled:opacity-40"
+          class="cursor-pointer px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 hover:border-primary-500 hover:text-primary-400 disabled:opacity-40"
           :disabled="pageActive === 1"
         >
           Prev
@@ -243,15 +248,15 @@ const name = localStorage.getItem('name')
           v-for="(item, index) in lastPage"
           :key="index"
           @click="pageActive = item"
-          class="cursor-pointer px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-slate-400 hover:border-primary-500 hover:text-primary-400"
-          :class="{ 'bg-primary-500': pageActive === item, 'text-white': pageActive === item }"
+          class="cursor-pointer px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 hover:border-primary-500 hover:text-primary-400"
+          :class="{ 'bg-primary-500': pageActive === item, 'text-slate-800': pageActive === item }"
         >
           {{ item }}
         </button>
 
         <button
           @click="pageActive++"
-          class="cursor-pointer px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-slate-400 hover:border-primary-500 hover:text-primary-400 disabled:opacity-40"
+          class="cursor-pointer px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 hover:border-primary-500 hover:text-primary-400 disabled:opacity-40"
           :disabled="pageActive === lastPage"
         >
           Next
@@ -259,22 +264,22 @@ const name = localStorage.getItem('name')
       </div>
     </main>
     <div id="bookModal" class="fixed inset-0 z-50 bg-black/80 flex items-end" v-if="bookDetail">
-      <div class="bg-dark-card rounded-t-3xl w-full max-h-[80vh] overflow-y-auto">
+      <div class="bg-white rounded-t-3xl w-full max-h-[80vh] overflow-y-auto">
         <div class="flex justify-center py-3">
-          <div class="w-12 h-1 bg-dark-border rounded-full"></div>
+          <div class="w-12 h-1 bg-slate-200 rounded-full"></div>
         </div>
 
         <div class="p-6">
           <div class="flex gap-4 mb-6">
             <img
-              src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200"
+              :src="getBookCover(bookDetail)"
               alt="Book"
               class="w-24 h-36 object-cover rounded-xl"
             />
             <div class="flex-1">
               <h2 class="text-xl font-bold mb-2">{{ bookDetail?.title }}</h2>
-              <p class="text-slate-400 mb-2">{{ bookDetail?.author }}</p>
-              <p class="text-sm text-slate-500">{{ bookDetail?.isbn }}</p>
+              <p class="text-slate-600 mb-2">{{ bookDetail?.author }}</p>
+              <p class="text-sm text-slate-600">{{ bookDetail?.isbn }}</p>
               <div class="flex items-center gap-2 mt-3">
                 <span
                   v-if="bookDetail?.available_count > 0"
@@ -290,14 +295,14 @@ const name = localStorage.getItem('name')
 
           <div class="mb-6">
             <h3 class="font-medium mb-2">Deskripsi</h3>
-            <p class="text-sm text-slate-400 leading-relaxed">
+            <p class="text-sm text-slate-600 leading-relaxed">
               {{ bookDetail?.summary }}
             </p>
           </div>
 
           <button
             @click="bookDetail = null"
-            class="w-full py-4 bg-linear-to-r from-primary-500 to-accent-500 rounded-xl font-semibold text-lg flex items-center justify-center gap-2"
+            class="w-full py-4 bg-primary-600 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 text-white"
           >
             Tutup
           </button>
@@ -309,10 +314,10 @@ const name = localStorage.getItem('name')
 
 <style scoped>
 body {
-  background: #0a0a0f;
+  background: #f8fafc;
 }
 
-.text-gradient {
+.text-primary-600 {
   background: linear-gradient(135deg, #6366f1, #22d3ee);
   -webkit-text-fill-color: transparent;
 }
@@ -326,7 +331,7 @@ body {
 }
 
 .shimmer {
-  background: linear-gradient(90deg, #1e1e2e 0%, #2a2a3e 50%, #1e1e2e 100%);
+  background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 50%, #e2e8f0 100%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }

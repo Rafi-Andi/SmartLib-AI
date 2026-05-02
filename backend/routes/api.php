@@ -20,8 +20,9 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/kiosk', [KioskController::class, 'index']);
     Route::get('/schools', [SchoolManagementController::class, 'index']);
     Route::apiResource('/users', UserManagementController::class);
-    Route::apiResource('/books', BookController::class);
+    Route::post('/ai-extract-book', [BookController::class, 'aiExtract']);
     Route::get('/books-categories', [BookController::class, 'categories']);
+    Route::apiResource('/books', BookController::class);
     Route::get('/transactions/me', [TransactionController::class, 'me']);
     Route::get('/transactions/analytics', [TransactionController::class, 'analytics']);
     Route::post('/transactions/borrow', [TransactionController::class, 'borrow']);
