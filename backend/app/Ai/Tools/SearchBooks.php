@@ -32,7 +32,7 @@ class SearchBooks implements Tool
     
     $booksQuery = Book::where('school_id', $user->school_id);
     
-    $genericQueries = ['buku', 'semua', 'apa saja', ''];
+    $genericQueries = ['buku', 'semua', 'apa saja', '', 'rekomendasi', 'bagus', 'buku bagus'];
     if (!in_array(strtolower(trim($query)), $genericQueries)) {
         $booksQuery->where('title', 'like', "%{$query}%");
     }

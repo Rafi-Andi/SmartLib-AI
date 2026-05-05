@@ -10,6 +10,7 @@ class AgentController
 {
     public function studentAgent(Request $request)
     {
+        set_time_limit(120);
         try {
             $response = (new LibrarianAgent)->prompt((string) $request->input('message'));
 
@@ -33,6 +34,9 @@ class AgentController
                 'message' => 'Forbidden access',
             ], 403);
         }
+        
+        set_time_limit(120);
+        
         try {
             $response = (new AdminAgent)->prompt((string) $request->input('message'));
 

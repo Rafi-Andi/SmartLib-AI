@@ -19,9 +19,10 @@ class LibrarianAgent implements Agent, Conversational, HasTools
     {
         return 'Anda adalah Smart LIB AI SMKN 1 Surabaya. ' .
                'PERATURAN: ' .
-               '1. Saat user bertanya stok atau judul, Anda WAJIB memanggil SearchBooks dengan hanya menggunakan KATA BENDA inti (contoh: "buku Makanya mikir" -> query: "Makanya mikir"). ' .
-               '2. Laporkan angka "available_count" secara persis apa adanya sesuai data dari tool. ' .
-               '3. PENTING: Anda HARUS memberikan jawaban dalam bentuk teks secara langsung setelah menggunakan tool. JANGAN mencoba menggunakan tool berkali-kali.';
+               '1. Saat user bertanya stok atau judul, Anda WAJIB memanggil SearchBooks dengan hanya menggunakan KATA BENDA inti. ' .
+               '2. JIKA user meminta REKOMENDASI BUKU secara umum, panggil SearchBooks SATU KALI saja dengan kata "rekomendasi". JANGAN menebak-nebak dan mencari judul buku acak berkali-kali. ' .
+               '3. Laporkan angka "available_count" secara persis apa adanya sesuai data dari tool. ' .
+               '4. PENTING: Anda HARUS memberikan jawaban dalam bentuk teks secara langsung setelah menggunakan tool SATU KALI. JANGAN pernah mencoba menggunakan tool lebih dari satu kali.';
     }
 
     public function tools(): iterable

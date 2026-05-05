@@ -1,4 +1,5 @@
 import AdminBooks from '@/pages/Admin/AdminBooks.vue'
+import AdminChatbot from '@/pages/Admin/AdminChatbot.vue'
 import AdminIndex from '@/pages/Admin/AdminIndex.vue'
 import AdminKiosk from '@/pages/Admin/AdminKiosk.vue'
 import AdminLayout from '@/pages/Admin/AdminLayout.vue'
@@ -102,6 +103,11 @@ const router = createRouter({
           path: 'rfid',
           component: AdminRfid,
           name: 'AdminRfid',
+        },
+        {
+          path: 'chatbot',
+          component: AdminChatbot,
+          name: 'AdminChatbot',
         },
       ],
     },

@@ -1,16 +1,27 @@
 <script setup>
 import api from '@/lib/axios'
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { marked } from 'marked'
 
-const messages = ref([
-  {
-    id: 1,
-    sender: 'ai',
-    text: 'Halo! Saya SmartLib AI Agent. Ada yang bisa saya bantu terkait buku, peminjaman, atau informasi perpustakaan hari ini?',
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-  },
-])
+const savedMessage = localStorage.getItem('user_messages')
+
+const initialMessage = savedMessage
+  ? JSON.parse(savedMessage)
+  : [
+      {
+        id: 1,
+        sender: 'ai',
+        text: 'Halo! Saya SmartLib AI Agent. Ada yang bisa saya bantu terkait buku, peminjaman, atau informasi perpustakaan hari ini?',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      }
+    ]
+
+const messages = ref(initialMessage)
+
+watch(messages, (newMessages) => {
+  localStorage.setItem('user_messages', JSON.stringify(newMessages))
+}, {deep: true})
+
 const newMessage = ref('')
 const isTyping = ref(false)
 const chatContainer = ref(null)
@@ -23,9 +34,8 @@ const scrollToBottom = async () => {
 }
 
 const sendMessage = async () => {
-  if (!newMessage.value.trim()) return
+  if (!newMessage.value.trim() || isTyping.value) return
 
-  // Tambahkan pesan user
   messages.value.push({
     id: Date.now(),
     sender: 'user',
@@ -35,7 +45,6 @@ const sendMessage = async () => {
 
   scrollToBottom()
 
-  // Simulasi AI mengetik
   isTyping.value = true
 
   try {
@@ -44,8 +53,6 @@ const sendMessage = async () => {
     })
 
     newMessage.value = ''
-
-    console.log(ress, newMessage.value)
 
     messages.value.push({
       id: Date.now(),
@@ -58,7 +65,7 @@ const sendMessage = async () => {
     messages.value.push({
       id: Date.now(),
       sender: 'ai',
-      text: error.response.data.message,
+      text: error.response?.data?.message || 'Terjadi kesalahan sistem atau request timeout. Coba lagi.',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     })
   } finally {
@@ -66,7 +73,6 @@ const sendMessage = async () => {
   }
 }
 
-// Auto resize textarea
 const adjustTextareaHeight = (e) => {
   const el = e.target
   el.style.height = '40px'
@@ -155,8 +161,8 @@ onMounted(() => {
               : 'bg-white border border-slate-100 text-slate-700 rounded-2xl rounded-tl-sm',
           ]"
         >
-          <div 
-            class="markdown-content text-[14px] leading-relaxed" 
+          <div
+            class="markdown-content text-[14px] leading-relaxed"
             v-html="parseMessage(msg.text, msg.sender)"
           ></div>
           <p
@@ -241,7 +247,7 @@ onMounted(() => {
           @input="adjustTextareaHeight"
           rows="1"
           placeholder="Tanya AI tentang buku..."
-          class="flex-1 max-h-32 bg-transparent border-none focus:ring-0 resize-none py-3 text-sm text-slate-700 placeholder-slate-400 scrollbar-hide leading-relaxed"
+          class="flex-1 max-h-32 bg-transparent border-none focus:ring-0 resize-none py-3 text-sm text-slate-700 placeholder-slate-400 scrollbar-hide leading-relaxed outline-none"
           style="min-height: 44px"
         ></textarea>
 
