@@ -28,7 +28,6 @@ class LibraryAnalytics implements Tool
 
     public function handle($arguments): string
     {
-        // Mendapatkan admin yang sedang login melalui Sanctum
         $admin = auth('sanctum')->user(); 
 
         if (!$admin || !$admin->school_id) {
@@ -47,11 +46,9 @@ class LibraryAnalytics implements Tool
 
     private function getGeneralStats($schoolId): string
     {
-        // Filter semua model berdasarkan school_id
         $totalBooks = Book::where('school_id', $schoolId)->sum('stock_count');
         $availableBooks = Book::where('school_id', $schoolId)->sum('available_count');
         
-        // Transaction difilter melalui school_id miliknya sendiri
         $totalTransactions = Transaction::where('school_id', $schoolId)->count();
         $activeLoans = Transaction::where('school_id', $schoolId)->whereNull('returned_at')->count();
 
@@ -92,10 +89,8 @@ class LibraryAnalytics implements Tool
 
     private function getUserStats($schoolId): string
     {
-        // Menghitung user yang terdaftar di sekolah yang sama
         $totalUsers = User::where('school_id', $schoolId)->count();
         
-        // Menghitung siswa aktif (yang pernah melakukan transaksi) di sekolah tersebut
         $activeUsers = Transaction::where('school_id', $schoolId)
             ->distinct('user_id')
             ->count('user_id');

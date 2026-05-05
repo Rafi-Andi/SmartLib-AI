@@ -43,19 +43,16 @@ class FinesManager implements Tool
 
     private function getReport($schoolId): string
     {
-        // Hitung total denda yang belum dibayar
         $unpaidTotal = Transaction::where('school_id', $schoolId)
             ->where('fine_amount', '>', 0)
             ->where('fine_paid', false)
             ->sum('fine_amount');
 
-        // Hitung total denda yang sudah dibayar
         $paidTotal = Transaction::where('school_id', $schoolId)
             ->where('fine_amount', '>', 0)
             ->where('fine_paid', true)
             ->sum('fine_amount');
 
-        // Jumlah siswa yang menunggak
         $unpaidUsersCount = Transaction::where('school_id', $schoolId)
             ->where('fine_amount', '>', 0)
             ->where('fine_paid', false)
@@ -80,7 +77,6 @@ class FinesManager implements Tool
             return "Kabar baik! Saat ini tidak ada siswa yang menunggak denda perpustakaan.";
         }
 
-        // Kelompokkan denda per siswa
         $usersFines = [];
         foreach ($unpaidTransactions as $trx) {
             $name = $trx->user->name ?? 'Unknown';

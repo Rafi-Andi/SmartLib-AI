@@ -18,7 +18,6 @@ class ProcurementAdvisor implements Tool
     public function schema(JsonSchema $schema): array
     {
         return [
-            // Tidak ada parameter wajib karena tool ini murni menganalisis data secara mandiri
         ];
     }
 
@@ -32,7 +31,6 @@ class ProcurementAdvisor implements Tool
 
         $schoolId = $admin->school_id;
 
-        // 1. Analisis Kategori Paling Sering Dipinjam
         $popularCategories = Transaction::where('transactions.school_id', $schoolId)
             ->join('books', 'transactions.book_id', '=', 'books.id')
             ->select('books.category', DB::raw('count(transactions.id) as borrow_count'))
@@ -41,13 +39,12 @@ class ProcurementAdvisor implements Tool
             ->limit(3)
             ->get();
 
-        // 2. Analisis Buku dengan Demand Tinggi tapi Stok Rendah (Sering dipinjam tapi stok <= 3)
         $lowStockHighDemand = Transaction::where('transactions.school_id', $schoolId)
             ->join('books', 'transactions.book_id', '=', 'books.id')
             ->where('books.stock_count', '<=', 3)
             ->select('books.title', 'books.stock_count', DB::raw('count(transactions.id) as borrow_count'))
             ->groupBy('books.id', 'books.title', 'books.stock_count')
-            ->having('borrow_count', '>', 2) // Minimal sudah dipinjam lebih dari 2 kali
+            ->having('borrow_count', '>', 2) 
             ->orderByDesc('borrow_count')
             ->limit(3)
             ->get();

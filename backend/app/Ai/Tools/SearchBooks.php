@@ -23,22 +23,21 @@ class SearchBooks implements Tool
         ];
     }
 
-    /**
-     * Handle pencarian buku.
-     * 
-     * Laravel AI SDK mengirim argumen sebagai Laravel\Ai\Tools\Request (ArrayAccess),
-     * sehingga harus diakses dengan $arguments['key'], bukan $arguments->key.
-     */
     public function handle($arguments): string
 {
     Log::info('Raw Arguments dari AI:', ['data' => $arguments]);
     $user = auth('sanctum')->user();
     $query = $arguments['query'] ?? '';
     Log::info('Cleaned Query (Query Query):', ['data' => $query]);
-    $books = Book::where('school_id', $user->school_id)
-        ->where('title', 'like', "%{$query}%")
-        ->limit(5)
-        ->get();
+    
+    $booksQuery = Book::where('school_id', $user->school_id);
+    
+    $genericQueries = ['buku', 'semua', 'apa saja', ''];
+    if (!in_array(strtolower(trim($query)), $genericQueries)) {
+        $booksQuery->where('title', 'like', "%{$query}%");
+    }
+    
+    $books = $booksQuery->limit(5)->get();
 
     if ($books->isEmpty()) {
         return "Buku '$query' tidak ditemukan.";

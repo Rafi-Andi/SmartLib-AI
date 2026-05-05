@@ -35,7 +35,6 @@ class OverdueTracker implements Tool
         $threshold = $arguments['days_threshold'] ?? 0;
         $now = Carbon::now();
 
-        // Mencari transaksi yang belum kembali dan sudah melewati due_at
         $overdueTransactions = Transaction::where('school_id', $admin->school_id)
             ->whereNull('returned_at')
             ->where('due_at', '<', $now->subDays($threshold))
