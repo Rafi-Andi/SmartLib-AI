@@ -10,6 +10,7 @@ import Login from '@/pages/Auth/Login.vue'
 import RegisterSchool from '@/pages/Auth/RegisterSchool.vue'
 import RegisterStudent from '@/pages/Auth/RegisterStudent.vue'
 import StudentBorrow from '@/pages/Student/StudentBorrow.vue'
+import StudentChatbot from '@/pages/Student/StudentChatbot.vue'
 import StudentIndex from '@/pages/Student/StudentIndex.vue'
 import StudentLayout from '@/pages/Student/StudentLayout.vue'
 import StudentProfile from '@/pages/Student/StudentProfile.vue'
@@ -58,6 +59,11 @@ const router = createRouter({
           path: 'borrow',
           component: StudentBorrow,
           name: 'StudentBorrow',
+        },
+        {
+          path: 'chatbot',
+          component: StudentChatbot,
+          name: 'StudentChatbot',
         },
         {
           path: 'profile',

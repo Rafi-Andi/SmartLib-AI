@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\KioskController;
@@ -30,4 +31,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::apiResource('/transactions', TransactionController::class);
     Route::get('/auth/profile', [AuthController::class, 'profile']);
     Route::get('/school/analytics', [SchoolManagementController::class, 'analytics']);
+
+    Route::post('/ai-student', [AgentController::class, 'studentAgent']);
+    Route::post('/ai-admin', [AgentController::class, 'adminAgent']);
 });

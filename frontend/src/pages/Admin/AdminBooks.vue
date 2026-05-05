@@ -151,8 +151,12 @@ const fetchBookByIsbn = async () => {
   if (!formAddBook.value.isbn) return alert('Silahkan masukkan ISBN terlebih dahulu')
   
   isSearchingIsbn.value = true
+  
+  const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY
+  
   try {
-    const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${formAddBook.value.isbn}`)
+    const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${formAddBook.value.isbn}&key=${apiKey}`
+    const response = await axios.get(url)
     
     if (response.data.totalItems === 0) {
       alert('Buku tidak ditemukan untuk ISBN tersebut')
@@ -179,10 +183,14 @@ const fetchBookByIsbn = async () => {
       extractedCoverUrl.value = imageUrl
     }
     
-    alert('Metadata berhasil diekstrak!')
+    alert('Metadata berhasil ditemukan!')
   } catch (error) {
     console.error(error)
-    alert('Gagal mengambil metadata buku')
+    if (error.response?.status === 429) {
+      alert('Limit Google API tercapai. Pastikan API Key benar atau tunggu sebentar.')
+    } else {
+      alert('Gagal mengambil metadata buku')
+    }
   } finally {
     isSearchingIsbn.value = false
   }
