@@ -43,6 +43,12 @@ class TransactionController
             ->when($request->book_id, function ($q, $book_id) {
                 $q->where('book_id', $book_id);
             })
+            ->when($request->has('has_fine'), function ($q) {
+                $q->where('fine_amount', '>', 0);
+            })
+            ->when($request->has('fine_paid'), function ($q) use ($request) {
+                $q->where('fine_paid', filter_var($request->fine_paid, FILTER_VALIDATE_BOOLEAN));
+            })
             ->when($request->date_from, function ($q, $date_from) {
                 $q->whereDate('borrowed_at', '>=', $date_from);
             })
@@ -96,6 +102,43 @@ class TransactionController
     public function update(Request $request, Transaction $transaction)
     {
         //
+    }
+
+    public function payFine(Request $request, $id)
+    {
+        try {
+            $user = $request->user();
+            if ($user->role !== 'admin') {
+                return response()->json(["message" => "Unauthorized"], 401);
+            }
+
+            $transaction = Transaction::find($id);
+            if (!$transaction) {
+                return response()->json(["message" => "Transaksi tidak ditemukan"], 404);
+            }
+
+            if ($transaction->fine_amount <= 0) {
+                return response()->json(["message" => "Tidak ada denda untuk transaksi ini"], 422);
+            }
+
+            if ($transaction->fine_paid) {
+                return response()->json(["message" => "Denda sudah dibayar sebelumnya"], 422);
+            }
+
+            $transaction->update([
+                "fine_paid" => true
+            ]);
+
+            return response()->json([
+                "message" => "Pembayaran denda berhasil dicatat",
+                "data" => $transaction
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                "message" => "Terjadi kesalahan",
+                "error" => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

@@ -24,6 +24,7 @@ class TransactionResource extends JsonResource
             "returned_at" => $this->returned_at,
             "status" => $this->status,
             "fine_amount" => $this->fine_amount,
+            "fine_paid" => $this->fine_paid,
             "days_late" => $this->days_late,
             "days_remaining" => (int) $daysRemaining,
             "book" => [

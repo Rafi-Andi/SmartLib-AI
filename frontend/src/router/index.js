@@ -1,5 +1,6 @@
 import AdminBooks from '@/pages/Admin/AdminBooks.vue'
 import AdminChatbot from '@/pages/Admin/AdminChatbot.vue'
+import AdminFines from '@/pages/Admin/AdminFines.vue'
 import AdminIndex from '@/pages/Admin/AdminIndex.vue'
 import AdminKiosk from '@/pages/Admin/AdminKiosk.vue'
 import AdminLayout from '@/pages/Admin/AdminLayout.vue'
@@ -98,6 +99,11 @@ const router = createRouter({
           path: 'transactions',
           component: AdminTransactions,
           name: 'AdminTransactions',
+        },
+        {
+          path: 'fines',
+          component: AdminFines,
+          name: 'AdminFines',
         },
         {
           path: 'rfid',

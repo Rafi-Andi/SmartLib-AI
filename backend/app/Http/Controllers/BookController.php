@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class BookController
 {
@@ -44,10 +45,14 @@ class BookController
      */
     public function store(Request $request)
     {
+        $user = $request->user();
+        
         $validated = $request->validate([
             "title" => ['required', 'string', 'max:255'],
             "author" => ['nullable', 'string', 'max:255'],
-            'isbn' => ['nullable', 'string', 'max:20', 'unique:books'],
+            'isbn' => ['nullable', 'string', 'max:20', Rule::unique('books')->where(function ($query) use ($user) {
+            return $query->where('school_id', $user->school_id);
+            })],
             'publisher' => ['nullable', 'string', 'max:255'],
             'year_published' => ['nullable', 'integer', 'min:1900', 'max:' . now()->year],
             'category' =>  ['nullable', 'string', 'max:100'],
@@ -56,8 +61,6 @@ class BookController
             'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'cover_url' => ['nullable', 'url'],
         ]);
-
-        $user = $request->user();
 
         if ($user->role !== 'admin') {
             return response()->json([
@@ -186,7 +189,6 @@ class BookController
                 Storage::disk('public')->put($filename, $imageContent);
                 $data['cover_img'] = $filename;
             } catch (\Exception $e) {
-                // Silently fail
             }
         }
 
@@ -283,7 +285,10 @@ class BookController
             $response = Http::withHeaders([
                 'x-goog-api-key' => $apiKey,
                 'Content-Type' => 'application/json',
-            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent", [
+            ])->retry(3, 3000, function ($exception, $request) {
+                // Retry up to 3 times with a 3-second delay if status is 429 (Too Many Requests)
+                return $exception->response && $exception->response->status() === 429;
+            })->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent", [
                 "contents" => [
                     [
                         "parts" => [
@@ -300,9 +305,15 @@ class BookController
             ]);
 
             if ($response->failed()) {
+                if ($response->status() === 429) {
+                    return response()->json([
+                        "message" => "Batas penggunaan AI (Limit) telah tercapai atau sistem sedang sangat sibuk. Silakan isi data buku secara manual atau coba lagi nanti."
+                    ], 429);
+                }
+
                 $errorData = $response->json();
                 return response()->json([
-                    "message" => "AI tetap gagal diakses.",
+                    "message" => "AI gagal diakses.",
                     "details" => [
                         "Error: " . ($errorData['error']['message'] ?? 'Unknown'),
                         "Status: " . ($errorData['error']['status'] ?? 'Unknown'),

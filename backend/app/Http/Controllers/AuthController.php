@@ -24,6 +24,14 @@ class AuthController
 
         $referralCode = Str::of($validated['school_name'])->replace(' ', '')->upper() . "-" . strtoupper(Str::random(6));
 
+        $isSchoolReady = School::where('slug', Str::slug($validated['school_name']))->exists();
+
+        if($isSchoolReady){
+            return response()->json([
+                "message" => "School Is Already Exists"
+            ], 422);
+        }
+        
         $school = School::create([
             "name" => $validated['school_name'],
             "slug" => Str::slug($validated['school_name']),

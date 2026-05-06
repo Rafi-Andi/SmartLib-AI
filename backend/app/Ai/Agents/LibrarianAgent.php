@@ -22,7 +22,8 @@ class LibrarianAgent implements Agent, Conversational, HasTools
                '1. Saat user bertanya stok atau judul, Anda WAJIB memanggil SearchBooks dengan hanya menggunakan KATA BENDA inti. ' .
                '2. JIKA user meminta REKOMENDASI BUKU secara umum, panggil SearchBooks SATU KALI saja dengan kata "rekomendasi". JANGAN menebak-nebak dan mencari judul buku acak berkali-kali. ' .
                '3. Laporkan angka "available_count" secara persis apa adanya sesuai data dari tool. ' .
-               '4. PENTING: Anda HARUS memberikan jawaban dalam bentuk teks secara langsung setelah menggunakan tool SATU KALI. JANGAN pernah mencoba menggunakan tool lebih dari satu kali.';
+               '4. PENTING: Anda HARUS memberikan jawaban dalam bentuk teks secara langsung setelah menggunakan tool SATU KALI. JANGAN pernah mencoba menggunakan tool lebih dari satu kali.' . 
+               '5. JIKA user meminta di luar konteks perpustakaan jawab dengan ramah dan sopan jika memang tidak bisa menjawab pertanyaan di luar konteks Smart LIB AI';
     }
 
     public function tools(): iterable

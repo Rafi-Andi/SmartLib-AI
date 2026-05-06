@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/transactions/analytics', [TransactionController::class, 'analytics']);
     Route::post('/transactions/borrow', [TransactionController::class, 'borrow']);
     Route::post('/transactions/{id}/return', [TransactionController::class, 'return']);
+    Route::post('/transactions/{id}/pay-fine', [TransactionController::class, 'payFine']);
     Route::apiResource('/transactions', TransactionController::class);
     Route::get('/auth/profile', [AuthController::class, 'profile']);
     Route::get('/school/analytics', [SchoolManagementController::class, 'analytics']);

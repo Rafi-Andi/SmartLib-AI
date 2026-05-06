@@ -54,8 +54,9 @@ const fetchDashboardData = async () => {
 
     const { data } = response.data
     student.value = data.student
-    books.value = data.books
     activeLoans.value = data.active_loans
+    
+    await fetchBooks(searchQuery.value, currentPage.value)
   } catch (error) {
     console.error('Gagal memuat data:', error)
   } finally {
@@ -64,19 +65,25 @@ const fetchDashboardData = async () => {
 }
 
 const searchQuery = ref('')
+const currentPage = ref(1)
+const lastPage = ref(1)
 
-const fetchBooks = async (query = '') => {
+const fetchBooks = async (query = '', page = 1) => {
   try {
     const token = localStorage.getItem('student_token')
     const response = await axios.get('http://localhost:8000/api/books', {
       params: {
         search: query,
         available_only: true,
+        page: page,
+        per_page: 6
       },
       headers: { Authorization: `Bearer ${token}` },
     })
 
     books.value = response.data.data.data
+    currentPage.value = response.data.data.current_page
+    lastPage.value = response.data.data.last_page
   } catch (error) {
     console.error('Gagal mencari buku:', error)
   }
@@ -84,9 +91,16 @@ const fetchBooks = async (query = '') => {
 
 watch(searchQuery, (newQuery) => {
   if (newQuery.length > 2 || newQuery.length === 0) {
-    fetchBooks(newQuery)
+    currentPage.value = 1
+    fetchBooks(newQuery, 1)
   }
 })
+
+const changePage = (page) => {
+  if (page >= 1 && page <= lastPage.value) {
+    fetchBooks(searchQuery.value, page)
+  }
+}
 
 const updateDateTime = () => {
   const now = new Date()
@@ -530,18 +544,20 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-              <div class="grid grid-cols-3 gap-4">
+            <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col">
+              <div class="grid grid-cols-3 gap-4 flex-1">
                 <button v-for="book in books" :key="book.id" @click="openBorrowModal(book)"
-                  class="bg-slate-50 border border-slate-200 rounded-xl p-3 hover:border-primary-500 transition-all duration-300 group text-left relative overflow-hidden">
-                  <div class="aspect-[3/4] bg-primary-500/10 rounded-lg mb-2 overflow-hidden">
+                  class="bg-slate-50 border border-slate-200 rounded-xl p-3 hover:border-primary-500 transition-all duration-300 group text-left relative overflow-hidden flex flex-col">
+                  <div class="aspect-[3/4] bg-primary-500/10 rounded-lg mb-2 overflow-hidden flex-shrink-0">
                     <img :src="getBookCover(book)"
                       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
-                  <p class="font-medium text-sm line-clamp-2 group-hover:text-primary-400 transition-colors">
-                    {{ book.title }}
-                  </p>
-                  <p class="text-xs text-slate-600">{{ book.author }}</p>
+                  <div class="flex-1">
+                    <p class="font-medium text-sm line-clamp-2 group-hover:text-primary-400 transition-colors">
+                      {{ book.title }}
+                    </p>
+                    <p class="text-xs text-slate-600 mt-1 line-clamp-1">{{ book.author }}</p>
+                  </div>
 
                   <div
                     class="absolute inset-0 bg-primary-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -549,6 +565,25 @@ onUnmounted(() => {
                       class="bg-primary-500 text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider text-white">Klik
                       untuk Pinjam</span>
                   </div>
+                </button>
+              </div>
+
+              <!-- Pagination UI -->
+              <div class="flex justify-center items-center gap-4 mt-4 pt-4 border-t border-slate-100" v-if="lastPage > 1">
+                <button 
+                  @click="changePage(currentPage - 1)" 
+                  :disabled="currentPage === 1"
+                  class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <span class="text-sm font-medium text-slate-600">
+                  Halaman {{ currentPage }} dari {{ lastPage }}
+                </span>
+                <button 
+                  @click="changePage(currentPage + 1)" 
+                  :disabled="currentPage === lastPage"
+                  class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                 </button>
               </div>
             </div>

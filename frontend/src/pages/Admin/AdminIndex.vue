@@ -229,8 +229,10 @@ onMounted(() => {
               </svg>
             </div>
             <div>
-              <p class="font-medium">Proses Peminjaman</p>
-              <p class="text-sm text-slate-600">Buka mode kiosk</p>
+              <router-link :to="{name: 'AdminKiosk'}" target="_blank" >
+                <p class="font-medium">Proses Peminjaman</p>
+                <p class="text-sm text-slate-600">Buka mode kiosk</p>
+              </router-link>
             </div>
           </button>
         </div>

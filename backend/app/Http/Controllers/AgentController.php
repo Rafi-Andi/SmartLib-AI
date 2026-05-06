@@ -20,6 +20,13 @@ class AgentController
             ]);
 
         } catch (\Exception $e) {
+            $msg = strtolower($e->getMessage());
+            if (strpos($msg, '429') !== false || strpos($msg, 'rate limit') !== false || strpos($msg, 'exhausted') !== false) {
+                return response()->json([
+                    'status' => 'error', 
+                    'message' => 'Layanan AI sedang sibuk atau batas penggunaan harian telah tercapai. Harap coba lagi dalam beberapa saat.'
+                ], 429);
+            }
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
@@ -46,6 +53,13 @@ class AgentController
             ]);
 
         } catch (\Exception $e) {
+            $msg = strtolower($e->getMessage());
+            if (strpos($msg, '429') !== false || strpos($msg, 'rate limit') !== false || strpos($msg, 'exhausted') !== false) {
+                return response()->json([
+                    'status' => 'error', 
+                    'message' => 'Layanan AI sedang sibuk atau batas penggunaan harian telah tercapai. Harap coba lagi dalam beberapa saat.'
+                ], 429);
+            }
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }

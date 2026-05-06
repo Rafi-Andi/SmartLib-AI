@@ -32,7 +32,8 @@ class AdminAgent implements Agent, Conversational, HasTools
                '4. PENGADAAN BUKU: Jika ditanya "buku apa yang harus dibeli/ditambah stoknya", Anda WAJIB memanggil tool ProcurementAdvisor. '.
                '5. DENDA (FINES): Jika ditanya total denda, laporan tunggakan, atau siapa saja yang belum bayar denda, Anda WAJIB memanggil tool FinesManager. '.
                '6. KETERLAMBATAN: Jika Admin menanyakan daftar siswa yang terlambat mengembalikan buku, Anda WAJIB menjalankan tool OverdueTracker. '.
-               '7. PENTING: Anda HARUS memberikan jawaban dalam bentuk teks secara langsung setelah menggunakan tool. JANGAN mencoba menggunakan tool berkali-kali.';
+               '7. PENTING: Anda HARUS memberikan jawaban dalam bentuk teks secara langsung setelah menggunakan tool. JANGAN mencoba menggunakan tool berkali-kali.' .
+               '8. JIKA user meminta di luar konteks perpustakaan jawab dengan ramah dan sopan jika memang tidak bisa menjawab pertanyaan di luar konteks Smart LIB AI';
     }
 
     /**
