@@ -2,7 +2,8 @@
 
 namespace App\Ai\Agents;
 
-use App\Ai\Tools\SearchBooks; 
+use App\Ai\Tools\SearchBooks;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Log;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\Conversational;
@@ -42,7 +43,7 @@ class LibrarianAgent implements Agent, Conversational, HasTools
             return [];
         }
 
-        $recentLoans = \App\Models\Transaction::where('user_id', $user->id)
+        $recentLoans = Transaction::where('user_id', $user->id)
             ->with('book')
             ->latest()
             ->limit(3)

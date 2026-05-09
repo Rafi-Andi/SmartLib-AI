@@ -76,6 +76,7 @@ class UserManagementController
             "nisn" => "nullable|string|max:20",
             "is_active" => "nullable|boolean",
             "rfid_uid" => "nullable|string"
+            
         ]);
 
         $user = $request->user();

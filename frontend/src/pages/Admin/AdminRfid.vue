@@ -1,7 +1,6 @@
 <script setup>
-import api from '@/lib/axios';
-import { onMounted, ref, watch } from 'vue';
-
+import api from '@/lib/axios'
+import { onMounted, ref, watch } from 'vue'
 
 const dataUsers = ref(null)
 const searchName = ref('')
@@ -12,8 +11,8 @@ const fetchUsers = async () => {
   const ress = await api.get('users', {
     params: {
       search: searchName.value,
-      is_rfid: isRfid.value
-    }
+      is_rfid: isRfid.value,
+    },
   })
   dataUsers.value = ress.data.data.data
 }
@@ -27,7 +26,7 @@ watch([searchName, isRfid], () => {
 const updateRfid = async (id) => {
   try {
     const ress = await api.put(`users/${id}`, {
-      rfid_uid: uidInput.value
+      rfid_uid: uidInput.value,
     })
     alert(ress.data.message)
     fetchUsers()
@@ -40,7 +39,6 @@ const updateRfid = async (id) => {
 onMounted(() => {
   fetchUsers()
 })
-
 </script>
 
 <template>
@@ -89,8 +87,9 @@ onMounted(() => {
 
         <div class="space-y-2 max-h-80 overflow-y-auto">
           <button
-          @click="userActive = user"
-          v-for="(user, index) in dataUsers" :key="index"
+            @click="userActive = user"
+            v-for="(user, index) in dataUsers"
+            :key="index"
             class="w-full flex items-center gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl hover:border-primary-500 text-left transition-colors"
           >
             <div
@@ -102,7 +101,9 @@ onMounted(() => {
               <p class="font-medium">{{ user?.name }}</p>
               <p class="text-sm text-slate-600">NISN: {{ user?.nisn }}</p>
             </div>
-            <span v-if="user?.rfid_uid" class="px-3 py-1 bg-green-500/20 text-green-500 rounded-full text-xs"
+            <span
+              v-if="user?.rfid_uid"
+              class="px-3 py-1 bg-green-500/20 text-green-500 rounded-full text-xs"
               >Sudah RFID</span
             >
             <span v-else class="px-3 py-1 bg-warning-500/20 text-warning-500 rounded-full text-xs"
@@ -121,9 +122,12 @@ onMounted(() => {
           <h2 class="text-lg font-bold">Tempel Kartu RFID</h2>
         </div>
 
-        <div v-if="userActive" class="bg-primary-500/10 border border-primary-500/30 rounded-xl p-4 mb-6">
+        <div
+          v-if="userActive"
+          class="bg-primary-500/10 border border-primary-500/30 rounded-xl p-4 mb-6"
+        >
           <p class="text-sm text-primary-400 mb-2">Siswa Terpilih</p>
-          <div  class="flex items-center gap-3">
+          <div class="flex items-center gap-3">
             <div
               class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center font-bold text-white"
             >
@@ -171,17 +175,21 @@ onMounted(() => {
 
         <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
           <p class="text-sm text-slate-600 mb-3">Input UID Manual</p>
-          <div class="flex gap-2">
-            <input
-            v-model="uidInput"
-              type="text"
-              placeholder="Contoh: A1B2C3D4"
-              class="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl uppercase font-mono focus:border-primary-500 focus:outline-none"
-            />
-            <button @click="updateRfid(userActive?.id)" class="px-4 py-3 bg-primary-500 rounded-xl font-medium hover:opacity-90 text-white">
-              Terapkan
-            </button>
-          </div>
+          <form @submit.prevent="updateRfid(userActive?.id)">
+            <div class="flex gap-2">
+              <input
+                v-model="uidInput"
+                type="text" 
+                placeholder="Contoh: A1B2C3D4"
+                class="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl uppercase font-mono focus:border-primary-500 focus:outline-none"
+              />
+              <button
+                class="px-4 py-3 bg-primary-500 rounded-xl font-medium hover:opacity-90 text-white"
+              >
+                Terapkan
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ class OverdueTracker implements Tool
         $admin = auth('sanctum')->user();
         
         if (!$admin || !$admin->school_id) {
-            return "Galat: Autentikasi admin tidak valid.";
+            return "Autentikasi admin tidak valid.";
         }
 
         $threshold = $arguments['days_threshold'] ?? 0;

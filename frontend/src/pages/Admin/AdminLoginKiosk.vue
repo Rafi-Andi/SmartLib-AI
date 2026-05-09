@@ -1,7 +1,7 @@
 <script setup>
 import api from '@/lib/axios'
 import router from '@/router'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 
 const dontHaveCard = ref(false)
 const currentTime = ref('')
@@ -26,13 +26,24 @@ const updateDateTime = () => {
   })
 }
 
+const inputRfidRef = ref(null) 
+
+const focusInput = async () => {
+  dontHaveCard.value = true 
+  await nextTick() 
+  inputRfidRef.value?.focus()
+}
+
 let timer
 onMounted(() => {
   updateDateTime()
   timer = setInterval(updateDateTime, 1000)
+
+  focusInput()
 })
 
 onUnmounted(() => {
+  
   clearInterval(timer)
 })
 
@@ -56,13 +67,13 @@ const loginKiosk = async () => {
     alert(error.response.data.message)
   }
 }
+
+
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col text-slate-800">
-    <header
-      class="flex justify-between items-center p-6 bg-white/50 border-b border-slate-200"
-    >
+    <header class="flex justify-between items-center p-6 bg-white/50 border-b border-slate-200">
       <div class="flex items-center gap-3">
         <svg class="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -83,9 +94,7 @@ const loginKiosk = async () => {
     </header>
 
     <main class="flex-1 flex items-center justify-center p-8">
-      <div
-        class="bg-white border border-slate-200 rounded-3xl p-12 max-w-lg w-full text-center"
-      >
+      <div class="bg-white border border-slate-200 rounded-3xl p-12 max-w-lg w-full text-center">
         <div class="relative inline-block mb-8">
           <div class="absolute inset-0 bg-primary-500/20 rounded-full rfid-wave"></div>
           <div
@@ -96,7 +105,12 @@ const loginKiosk = async () => {
           <div
             class="relative z-10 w-24 h-24 bg-primary-600 rounded-2xl flex items-center justify-center pulse text-white"
           >
-            <svg class="w-12 h-12 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              class="w-12 h-12 text-slate-800"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -121,22 +135,6 @@ const loginKiosk = async () => {
           <div class="flex-1 border-t border-slate-200"></div>
         </div>
 
-        <button
-          @click="dontHaveCard = !dontHaveCard"
-          id="btnManualInput"
-          class="w-full py-3 border border-slate-200 rounded-xl text-slate-600 hover:bg-primary-500/10 hover:border-primary-500 hover:text-primary-400 transition-all duration-300 flex items-center justify-center gap-2"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"
-            />
-          </svg>
-          Tidak punya kartu? Input RFID
-        </button>
-
         <div id="nisnForm" v-if="dontHaveCard" class="mt-6">
           <div class="bg-slate-50 border border-primary-500/50 rounded-xl p-6">
             <div class="flex items-center gap-2 text-primary-400 mb-4">
@@ -151,28 +149,30 @@ const loginKiosk = async () => {
               <span class="font-medium">Input RFID</span>
             </div>
 
-            <input
-              v-model="inputRfid"
-              type="text"
-              placeholder="Masukkan RFID"
-              class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-center text-xl tracking-widest focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-              maxlength="10"
-            />
+            <form @submit.prevent="loginKiosk">
+              <input
+              ref="inputRfidRef"
+                v-model="inputRfid"
+                type="password"
+                placeholder="Masukkan RFID"
+                class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-center text-xl tracking-widest focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                maxlength="10"
+              />
 
-            <button
-              @click="loginKiosk"
-              class="w-full mt-4 py-3 bg-primary-600 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-white"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                />
-              </svg>
-              Masuk
-            </button>
+              <button
+                class="w-full mt-4 py-3 bg-primary-600 rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-white"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  />
+                </svg>
+                Masuk
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -191,7 +191,7 @@ const loginKiosk = async () => {
   -webkit-text-fill-color: transparent;
 }
 
-.{
+. {
   box-shadow: 0 0 60px rgba(99, 102, 241, 0.3);
 }
 

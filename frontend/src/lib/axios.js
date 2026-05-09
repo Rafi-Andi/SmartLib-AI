@@ -1,9 +1,17 @@
 import axios from "axios"
 import { useKioskStore } from "@/stores/kiosk" 
 
+const baseURL = import.meta.env.VITE_API_URL_BACKEND;
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL_BACKEND
+    baseURL: baseURL.endsWith('/') ? baseURL : baseURL + '/'
 })
+
+api.interceptors.request.use(config => {
+    if (config.url && config.url.startsWith('/')) {
+        config.url = config.url.substring(1);
+    }
+    return config;
+});
 
 api.interceptors.request.use((config) => {
     const kioskStore = useKioskStore()
