@@ -1,6 +1,7 @@
 <script setup>
 import api from '@/lib/axios'
 import { onMounted, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
 
 const dataUsers = ref(null)
 const searchName = ref('')
@@ -16,7 +17,6 @@ const fetchUsers = async () => {
   })
   dataUsers.value = ress.data.data.data
 }
-
 const userActive = ref(null)
 
 watch([searchName, isRfid], () => {
@@ -28,11 +28,11 @@ const updateRfid = async (id) => {
     const ress = await api.put(`users/${id}`, {
       rfid_uid: uidInput.value,
     })
-    alert(ress.data.message)
+    toast.success(ress.data.message)
     fetchUsers()
     userActive.value = null
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   }
 }
 

@@ -3,6 +3,7 @@ import api from '@/lib/axios'
 import { formatDate } from '@/lib/format'
 import router from '@/router'
 import { onMounted, ref } from 'vue'
+import { toast } from 'vue-sonner'
 
 const dataProfile = ref(null)
 
@@ -18,9 +19,9 @@ const handleLogout = async () => {
     localStorage.removeItem('role')
     localStorage.removeItem('name')
     router.push({ name: 'Login' })
-    alert(ress.data.message)
+    toast.success(ress.data.message)
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   }
 }
 

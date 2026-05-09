@@ -4,6 +4,7 @@ import axios from 'axios'
 import api from '@/lib/axios'
 import { formatDate } from '@/lib/format'
 import router from '@/router'
+import { toast } from 'vue-sonner'
 
 const formatDateLong = (d) => {
   const date = new Date(d)
@@ -191,7 +192,7 @@ const handleBorrow = async () => {
     closeBorrowModal()
   } catch (error) {
     console.error('Borrow Error:', error)
-    alert(error.response?.data?.message || 'Gagal meminjam buku')
+    toast.error(error.response?.data?.message || 'Gagal meminjam buku')
   }
 }
 
@@ -338,7 +339,7 @@ const handleReturn = async (id) => {
   } catch (error) {
     console.error('Return Error:', error)
     const errorMsg = error.response?.data?.message || error.message || 'Gagal mengembalikan buku'
-    alert(errorMsg)
+    toast.error(errorMsg)
   }
 }
 
@@ -464,7 +465,7 @@ const handleLogout = async (isAuto = false) => {
     }
     
     if (!isAuto) {
-      alert('Berhasil keluar')
+      toast.success('Berhasil keluar')
     } else {
       console.log('Auto logout activated due to inactivity')
     }

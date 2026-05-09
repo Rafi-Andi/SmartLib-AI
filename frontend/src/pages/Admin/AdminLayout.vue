@@ -1,6 +1,7 @@
 <script setup>
 import api from '@/lib/axios'
 import router from '@/router'
+import { toast } from 'vue-sonner'
 
 const token = localStorage.getItem('token')
 const role = localStorage.getItem('role')
@@ -17,11 +18,11 @@ const name = localStorage.getItem('name')
 const handleLogout = async () => {
   try {
     const ress = await api.post('auth/logout')
-    alert(ress.data.message)
+    toast.success(ress.data.message)
     router.push({ name: 'Login' })
     localStorage.removeItem('token')
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   }
 }
 </script>

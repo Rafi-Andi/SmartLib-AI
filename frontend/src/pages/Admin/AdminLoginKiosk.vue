@@ -2,6 +2,7 @@
 import api from '@/lib/axios'
 import router from '@/router'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { toast } from 'vue-sonner'
 
 const dontHaveCard = ref(false)
 const currentTime = ref('')
@@ -60,11 +61,11 @@ const loginKiosk = async () => {
     const ress = await api.post('auth/kiosk', {
       rfid_uid: inputRfid.value,
     })
-    alert(ress.data.message)
+    toast.success(ress.data.message)
     localStorage.setItem('student_token', ress.data.student_token)
     router.push({ name: 'AdminKiosk' })
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   }
 }
 

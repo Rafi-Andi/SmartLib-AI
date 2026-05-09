@@ -2,6 +2,8 @@
 import api from '@/lib/axios'
 import { formatDate, formatRupiah } from '@/lib/format'
 import { onMounted, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
+import { confirmDialog } from '@/lib/swal'
 
 const dataTransactions = ref([])
 const pageActive = ref(1)
@@ -52,8 +54,9 @@ const changePage = (page) => {
 }
 
 const returnBook = async (transactionId) => {
-  if (confirm('Apakah buku ini sudah dikembalikan?')) {
-    alert(`Transaksi #${transactionId} dikembalikan`)
+  const result = await confirmDialog('Konfirmasi Pengembalian', 'Apakah buku ini sudah dikembalikan?')
+  if (result.isConfirmed) {
+    toast.success(`Transaksi #${transactionId} dikembalikan`)
   }
 }
 

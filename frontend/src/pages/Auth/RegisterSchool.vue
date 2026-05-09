@@ -2,6 +2,7 @@
 import api from '@/lib/axios'
 import router from '@/router'
 import { ref } from 'vue'
+import { toast } from 'vue-sonner'
 
 const formRegister = ref({
   school_name: '',
@@ -20,7 +21,7 @@ const handleRegister = async () => {
   try {
     isLoading.value = true
     if (formRegister.value.confirm_password !== formRegister.value.password) {
-      alert('Konfirmasi password tidak valid')
+      toast.error('Konfirmasi password tidak valid')
       return
     }
     const ress = await api.post('/auth/register-school', formRegister.value)
@@ -35,9 +36,9 @@ const handleRegister = async () => {
       confirm_password: '',
     }
     router.push({name: 'Login'})
-    alert(ress.data.message)
+    toast.success(ress.data.message)
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
     errorMessages.value = error.response.data.errors
     console.log(error)
   } finally {

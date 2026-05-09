@@ -2,6 +2,7 @@
 import api from '@/lib/axios'
 import router from '@/router'
 import { ref } from 'vue'
+import { toast } from 'vue-sonner'
 
 const formLogin = ref({
   email: '',
@@ -34,11 +35,11 @@ const handleLogin = async () => {
     } else if (ress.data.data.user.role === 'student') {
       router.push({ name: 'StudentLayout' })
     }
-    alert(ress.data.message)
+    toast.success(ress.data.message)
   } catch (error) {
     console.log(error)
     errorMessages.value = error.response.data.errors
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   } finally {
     isLoading.value = false
   }

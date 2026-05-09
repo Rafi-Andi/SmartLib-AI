@@ -2,6 +2,8 @@
 import api from '@/lib/axios'
 import axios from 'axios'
 import { handleError, onMounted, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
+import { confirmDialog } from '@/lib/swal'
 
 const dataCategories = ref(null)
 const fetchCategories = async () => {
@@ -79,7 +81,7 @@ const startCamera = async () => {
         videoRef.value.srcObject = stream
       }
     } catch (err) {
-      alert('Gagal mengakses kamera: ' + err.message)
+      toast.error('Gagal mengakses kamera: ' + err.message)
       isCameraOpen.value = false
     }
   }, 100)
@@ -129,7 +131,7 @@ const captureAndExtract = async () => {
       coverPreview.value = URL.createObjectURL(blob)
       coverFile.value = new File([blob], 'captured-cover.jpg', { type: 'image/jpeg' })
       
-      alert('Metadata berhasil diekstrak oleh AI!')
+      toast.success('Metadata berhasil diekstrak oleh AI!')
       stopCamera()
     } catch (err) {
       console.error('AI Error:', err)
@@ -140,7 +142,7 @@ const captureAndExtract = async () => {
         fullMessage += '\n\nDetail:\n' + errorData.details.join('\n')
       }
       
-      alert('Gagal mengekstrak metadata: ' + fullMessage)
+      toast.error('Gagal mengekstrak metadata: ' + fullMessage)
     } finally {
       isExtracting.value = false
     }
@@ -148,7 +150,10 @@ const captureAndExtract = async () => {
 }
 
 const fetchBookByIsbn = async () => {
-  if (!formAddBook.value.isbn) return alert('Silahkan masukkan ISBN terlebih dahulu')
+  if (!formAddBook.value.isbn) {
+    toast.warning('Silahkan masukkan ISBN terlebih dahulu')
+    return
+  }
   
   isSearchingIsbn.value = true
   
@@ -159,7 +164,7 @@ const fetchBookByIsbn = async () => {
     const response = await axios.get(url)
     
     if (response.data.totalItems === 0) {
-      alert('Buku tidak ditemukan untuk ISBN tersebut')
+      toast.error('Buku tidak ditemukan untuk ISBN tersebut')
       return
     }
 
@@ -183,13 +188,13 @@ const fetchBookByIsbn = async () => {
       extractedCoverUrl.value = imageUrl
     }
     
-    alert('Metadata berhasil ditemukan!')
+    toast.success('Metadata berhasil ditemukan!')
   } catch (error) {
     console.error(error)
     if (error.response?.status === 429) {
-      alert('Limit Google API tercapai. Pastikan API Key benar atau tunggu sebentar.')
+      toast.error('Limit Google API tercapai. Pastikan API Key benar atau tunggu sebentar.')
     } else {
-      alert('Gagal mengambil metadata buku')
+      toast.error('Gagal mengambil metadata buku')
     }
   } finally {
     isSearchingIsbn.value = false
@@ -256,12 +261,12 @@ const handleAddBook = async () => {
     const ress = await api.post('/books', fd, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
-    alert(ress.data.message)
+    toast.success(ress.data.message)
     resetForm()
     isAddBook.value = false
     fetchBooks()
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   }
 }
 const handleEditBook = async () => {
@@ -284,23 +289,25 @@ const handleEditBook = async () => {
     const ress = await api.post(`books/${editData.value.id}`, fd, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
-    alert(ress.data.message)
+    toast.success(ress.data.message)
     resetForm()
     editData.value = null
     fetchBooks()
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   }
 }
 
 const handleDelete = async (id) => {
-  if (!confirm('Apakah yakin ingin menghapus?')) return
+  const result = await confirmDialog('Konfirmasi Hapus', 'Apakah yakin ingin menghapus?')
+  if (!result.isConfirmed) return
+  
   try {
     const ress = await api.delete(`/books/${id}`)
-    alert(ress.data.message)
+    toast.success(ress.data.message)
     fetchBooks()
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   }
 }
 

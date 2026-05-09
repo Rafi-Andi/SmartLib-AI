@@ -1,6 +1,8 @@
 <script setup>
 import api from '@/lib/axios'
 import { onMounted, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
+import { confirmDialog } from '@/lib/swal'
 const dataUsers = ref([])
 const roleActive = ref('')
 const search = ref('')
@@ -53,12 +55,12 @@ const isAddUser = ref(false)
 const handleAddUser = async () => {
   try {
     const ress = await api.post('users', formAddUser.value)
-    alert(ress.data.message)
+    toast.success(ress.data.message)
     fetchUsers()
     isAddUser.value = false
     clearFormUser()
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   }
 }
 
@@ -67,12 +69,12 @@ const editData = ref(null)
 const handleEditUser = async () => {
   try {
     const ress = await api.put(`users/${editData.value.id}`, formAddUser.value)
-    alert(ress.data.message)
+    toast.success(ress.data.message)
     fetchUsers()
     editData.value = null
     clearFormUser()
   } catch (error) {
-    alert(error.response.data.message)
+    toast.error(error.response.data.message)
   }
 }
 
@@ -88,13 +90,14 @@ const clearFormUser = () => {
 }
 
 const handleDelete = async (id) => {
-  if (confirm('Apakah yakin ingin menghapus?')) {
+  const result = await confirmDialog('Konfirmasi Hapus', 'Apakah yakin ingin menghapus?')
+  if (result.isConfirmed) {
     try {
       const ress = await api.delete(`users/${id}`)
-      alert(ress.data.message)
+      toast.success(ress.data.message)
       fetchUsers()
     } catch (error) {
-      alert(error.response.data.message)
+      toast.error(error.response.data.message)
     }
   }
 }

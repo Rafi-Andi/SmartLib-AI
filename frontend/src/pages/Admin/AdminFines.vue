@@ -2,6 +2,8 @@
 import api from '@/lib/axios'
 import { formatDate, formatRupiah } from '@/lib/format'
 import { onMounted, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
+import { confirmDialog } from '@/lib/swal'
 
 const dataTransactions = ref([])
 const pageActive = ref(1)
@@ -40,13 +42,14 @@ const fetchFines = async (page = 1) => {
 }
 
 const payFine = async (transaction) => {
-  if (confirm(`Apakah Anda yakin ingin memproses pembayaran denda sebesar ${formatRupiah(transaction.fine_amount)} untuk transaksi #${transaction.id}?`)) {
+  const result = await confirmDialog('Konfirmasi Pembayaran', `Apakah Anda yakin ingin memproses pembayaran denda sebesar ${formatRupiah(transaction.fine_amount)} untuk transaksi #${transaction.id}?`)
+  if (result.isConfirmed) {
     try {
       const ress = await api.post(`transactions/${transaction.id}/pay-fine`)
-      alert(ress.data.message)
+      toast.success(ress.data.message)
       fetchFines(pageActive.value)
     } catch (error) {
-      alert(error.response?.data?.message || 'Terjadi kesalahan')
+      toast.error(error.response?.data?.message || 'Terjadi kesalahan')
     }
   }
 }
