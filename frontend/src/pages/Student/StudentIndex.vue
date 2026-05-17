@@ -204,7 +204,7 @@ const getBookCover = (book) => {
       <section>
         <h2 class="text-lg font-bold mb-4">Semua Buku</h2>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           <div
             v-for="(item, index) in dataAllBooks"
             :key="index"

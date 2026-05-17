@@ -161,6 +161,17 @@ class TransactionController
 
             $user = $request->user();
 
+            $unpaidFines = Transaction::where('user_id', $user->id)
+                ->where('fine_amount', '>', 0)
+                ->where('fine_paid', false)
+                ->count();
+
+            if ($unpaidFines > 0) {
+                return response()->json([
+                    "message" => "Anda memiliki {$unpaidFines} denda yang belum dibayar. Silakan lunasi terlebih dahulu sebelum meminjam buku."
+                ], 422);
+            }
+
             if ($user->transactions()->where('returned_at', null)->count() >= 3) {
                 return response()->json([
                     "message" => "User sudah meminjam 3 buku (maksimum)"

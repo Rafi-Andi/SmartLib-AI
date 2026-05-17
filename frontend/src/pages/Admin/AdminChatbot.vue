@@ -91,9 +91,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="flex-1 ml-64 h-screen flex flex-col bg-slate-50 relative overflow-hidden font-sans">
+  <main class="flex-1 h-screen flex flex-col bg-slate-50 relative overflow-hidden font-sans">
     <header
-      class="bg-white/90 backdrop-blur-md px-8 py-5 flex items-center shadow-sm border-b border-slate-200 z-10"
+      class="bg-white/90 backdrop-blur-md px-4 sm:px-8 py-4 sm:py-5 flex items-center shadow-sm border-b border-slate-200 z-10 pl-14 lg:pl-8"
     >
       <div
         class="w-12 h-12 bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl flex items-center justify-center mr-4 shadow-md relative"
@@ -119,7 +119,7 @@ onMounted(() => {
       </div>
     </header>
 
-    <div class="flex-1 overflow-y-auto p-8 space-y-6 flex flex-col" ref="chatContainer">
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 flex flex-col" ref="chatContainer">
       <div class="max-w-4xl w-full mx-auto space-y-6 flex flex-col flex-1">
         <div
           v-for="msg in messages"
@@ -142,7 +142,7 @@ onMounted(() => {
 
           <div
             :class="[
-              'max-w-[85%] px-6 py-4 shadow-sm relative group',
+              'max-w-[90%] sm:max-w-[85%] px-4 sm:px-6 py-3 sm:py-4 shadow-sm relative group',
               msg.sender === 'user'
                 ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-3xl rounded-tr-sm'
                 : 'bg-white border border-slate-200 text-slate-700 rounded-3xl rounded-tl-sm',
@@ -192,16 +192,16 @@ onMounted(() => {
     </div>
 
     <div
-      class="p-4 bg-white border-t border-slate-200 shadow-[0_-4px_15px_-3px_rgba(0,0,0,0.03)] relative z-10"
+      class="p-3 sm:p-4 bg-white border-t border-slate-200 shadow-[0_-4px_15px_-3px_rgba(0,0,0,0.03)] relative z-10"
     >
-      <div class="max-w-4xl mx-auto flex items-end gap-3 bg-slate-50 p-2 rounded-[28px] border border-slate-200 focus-within:border-primary-400 focus-within:ring-4 focus-within:ring-primary-100/50 transition-all duration-300">
+      <div class="max-w-4xl mx-auto flex items-end gap-2 sm:gap-3 bg-slate-50 p-2 rounded-[28px] border border-slate-200 focus-within:border-primary-400 focus-within:ring-4 focus-within:ring-primary-100/50 transition-all duration-300">
         <textarea
           v-model="newMessage"
           @keydown.enter.prevent="sendMessage"
           @input="adjustTextareaHeight"
           rows="1"
           placeholder="Minta ringkasan analitik, cari tahu denda siswa, atau stok buku..."
-          class="outline-none flex-1 max-h-48 bg-transparent border-none focus:ring-0 resize-none py-3.5 px-4 text-[15px] text-slate-700 placeholder-slate-400 scrollbar-hide leading-relaxed"
+          class="outline-none flex-1 max-h-48 bg-transparent border-none focus:ring-0 resize-none py-3 sm:py-3.5 px-3 sm:px-4 text-sm sm:text-[15px] text-slate-700 placeholder-slate-400 scrollbar-hide leading-relaxed"
           style="min-height: 48px"
         ></textarea>
 

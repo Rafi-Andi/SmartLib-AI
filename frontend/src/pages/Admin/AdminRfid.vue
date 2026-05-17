@@ -42,13 +42,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="flex-1 ml-64 p-8">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold">Aktivasi Kartu RFID</h1>
+  <main class="flex-1 p-4 sm:p-6 lg:p-8">
+    <div class="mb-6 lg:mb-8 pt-10 lg:pt-0">
+      <h1 class="text-2xl sm:text-3xl font-bold">Aktivasi Kartu RFID</h1>
       <p class="text-slate-600">Hubungkan kartu RFID dengan akun siswa</p>
     </div>
 
-    <div class="grid grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
       <div class="bg-white border border-slate-200 rounded-2xl p-6">
         <div class="flex items-center gap-3 mb-6">
           <span

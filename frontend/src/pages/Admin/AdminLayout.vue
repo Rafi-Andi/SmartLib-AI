@@ -2,6 +2,7 @@
 import api from '@/lib/axios'
 import router from '@/router'
 import { toast } from 'vue-sonner'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const token = localStorage.getItem('token')
 const role = localStorage.getItem('role')
@@ -14,6 +15,34 @@ if (!token) {
 }
 
 const name = localStorage.getItem('name')
+
+const sidebarOpen = ref(false)
+const isMobile = ref(window.innerWidth < 1024)
+
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 1024
+  if (!isMobile.value) {
+    sidebarOpen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value
+}
+
+const closeSidebar = () => {
+  if (isMobile.value) {
+    sidebarOpen.value = false
+  }
+}
 
 const handleLogout = async () => {
   try {
@@ -29,16 +58,41 @@ const handleLogout = async () => {
 
 <template>
   <section class="flex min-h-screen text-slate-800 bg-slate-50">
-    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col fixed h-full">
+    <div
+      v-if="sidebarOpen && isMobile"
+      class="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+      @click="closeSidebar"
+    ></div>
+
+    <button
+      v-if="isMobile"
+      @click="toggleSidebar"
+      class="fixed top-4 left-4 z-50 p-2.5 bg-white border border-slate-200 rounded-xl shadow-lg lg:hidden hover:bg-slate-50 transition-colors"
+    >
+      <svg v-if="!sidebarOpen" class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <svg v-else class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <aside
+      :class="[
+        'w-64 bg-white border-r border-slate-200 flex flex-col fixed h-full z-40 transition-transform duration-300 ease-in-out',
+        isMobile ? (sidebarOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'
+      ]"
+    >
       <div class="p-6 border-b border-slate-200">
         <span class="text-xl font-bold text-primary-500">LibSmart</span>
       </div>
 
-      <nav class="flex-1 p-4 space-y-2">
+      <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
         <router-link
           :to="{ name: 'AdminIndex' }"
           class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
+          @click="closeSidebar"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -55,6 +109,7 @@ const handleLogout = async () => {
           :to="{ name: 'AdminBooks' }"
           class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
+          @click="closeSidebar"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -71,6 +126,7 @@ const handleLogout = async () => {
           :to="{ name: 'AdminUsers' }"
           class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
+          @click="closeSidebar"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -87,6 +143,7 @@ const handleLogout = async () => {
           :to="{ name: 'AdminTransactions' }"
           class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
+          @click="closeSidebar"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -103,6 +160,7 @@ const handleLogout = async () => {
           :to="{ name: 'AdminFines' }"
           class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
+          @click="closeSidebar"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -119,6 +177,7 @@ const handleLogout = async () => {
           :to="{ name: 'AdminRfid' }"
           class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
+          @click="closeSidebar"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -135,6 +194,7 @@ const handleLogout = async () => {
           :to="{ name: 'AdminChatbot' }"
           class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent transition-all text-slate-600 hover:bg-slate-100"
           active-class="!bg-primary-500/10 !text-primary-400 !border-primary-500/30"
+          @click="closeSidebar"
         >
           <div class="relative">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,7 +235,9 @@ const handleLogout = async () => {
       </div>
     </aside>
 
-    <router-view />
+    <div class="flex-1 lg:ml-64 min-w-0">
+      <router-view />
+    </div>
   </section>
 </template>
 <style scoped>

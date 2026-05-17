@@ -5,6 +5,7 @@ import api from '@/lib/axios'
 import { formatDate } from '@/lib/format'
 import router from '@/router'
 import { toast } from 'vue-sonner'
+import { computed } from 'vue'
 
 const formatDateLong = (d) => {
   const date = new Date(d)
@@ -143,7 +144,19 @@ const removeInactivityListeners = () => {
   })
 }
 
+const hasUnpaidFines = computed(() => {
+  return student.value && student.value.unpaid_fines_count > 0
+})
+
+const formatRupiah = (amount) => {
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount)
+}
+
 const openBorrowModal = (book) => {
+  if (hasUnpaidFines.value) {
+    toast.error(`Anda memiliki ${student.value.unpaid_fines_count} denda belum dibayar (${formatRupiah(student.value.unpaid_fines_total)}). Silakan lunasi terlebih dahulu.`)
+    return
+  }
   selectedBook.value = book
   showModal.value = true
 }
@@ -535,6 +548,17 @@ onUnmounted(() => {
       </header>
 
       <main class="flex-1 p-6 overflow-hidden">
+        <div v-if="hasUnpaidFines" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-4">
+          <div class="p-3 bg-red-100 rounded-xl flex-shrink-0">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-red-700">Peminjaman Diblokir</p>
+            <p class="text-sm text-red-600">Anda memiliki {{ student?.unpaid_fines_count }} denda belum dibayar sebesar {{ formatRupiah(student?.unpaid_fines_total) }}. Silakan hubungi petugas perpustakaan untuk melunasi denda.</p>
+          </div>
+        </div>
         <div class="grid grid-cols-2 gap-6 h-full">
           <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col overflow-hidden">
             <div class="flex items-center justify-between mb-4">
@@ -561,10 +585,17 @@ onUnmounted(() => {
                   </div>
 
                   <div
+                    v-if="!hasUnpaidFines"
                     class="absolute inset-0 bg-primary-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <span
                       class="bg-primary-500 text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider text-white">Klik
                       untuk Pinjam</span>
+                  </div>
+                  <div
+                    v-else
+                    class="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span
+                      class="bg-red-500 text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider text-white">Lunasi Denda Dulu</span>
                   </div>
                 </button>
               </div>

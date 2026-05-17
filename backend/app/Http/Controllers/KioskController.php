@@ -10,6 +10,16 @@ class KioskController
 {
     public function index(Request $request){
         $user = $request->user();
+        $unpaidFinesCount = Transaction::where('user_id', $user->id)
+            ->where('fine_amount', '>', 0)
+            ->where('fine_paid', false)
+            ->count();
+
+        $unpaidFinesTotal = Transaction::where('user_id', $user->id)
+            ->where('fine_amount', '>', 0)
+            ->where('fine_paid', false)
+            ->sum('fine_amount');
+
         $studentData = [
         'name' => $user->name,
         'nisn' => $user->nisn,
@@ -17,6 +27,8 @@ class KioskController
         'loan_limit' => 3,
         'current_loans_count' => Transaction::where('user_id', $user->id)
             ->where('status', 'borrowed')->count(),
+        'unpaid_fines_count' => $unpaidFinesCount,
+        'unpaid_fines_total' => $unpaidFinesTotal,
         ];
         $books = Book::where('school_id', $user->school_id)
             ->where("available_count", ">", 0)

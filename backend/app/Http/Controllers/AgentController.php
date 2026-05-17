@@ -31,6 +31,7 @@ class AgentController
         }
     }
 
+    
     public function adminAgent(Request $request)
     {
         $user = $request->user();

@@ -84,16 +84,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="flex-1 ml-64 p-8">
-    <div class="flex items-center justify-between mb-8">
+  <main class="flex-1 p-4 sm:p-6 lg:p-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 lg:mb-8 gap-4 pt-10 lg:pt-0">
       <div>
-        <h1 class="text-3xl font-bold">Transaksi Peminjaman</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold">Transaksi Peminjaman</h1>
         <p class="text-slate-600">Kelola peminjaman dan pengembalian buku</p>
       </div>
       <router-link
         :to="{name: 'AdminLoginKiosk'}"
         target="_blank"
-        class="px-6 py-3 bg-primary-600 rounded-xl font-semibold flex items-center gap-2 text-white"
+        class="px-4 sm:px-6 py-3 bg-primary-600 rounded-xl font-semibold flex items-center gap-2 text-white w-full sm:w-auto justify-center"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -107,50 +107,50 @@ onMounted(() => {
       </router-link>
     </div>
 
-    <div class="grid grid-cols-4 gap-6 mb-8">
-      <div class="bg-white border border-slate-200 rounded-xl p-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
+      <div class="bg-white border border-slate-200 rounded-xl p-3 sm:p-4">
         <p class="text-slate-600 text-sm">Total Transaksi</p>
-        <p class="text-2xl font-bold mt-1">{{ dataAnalytics?.total }}</p>
+        <p class="text-lg sm:text-2xl font-bold mt-1">{{ dataAnalytics?.total }}</p>
       </div>
-      <div class="bg-white border border-slate-200 rounded-xl p-4">
+      <div class="bg-white border border-slate-200 rounded-xl p-3 sm:p-4">
         <p class="text-slate-600 text-sm">Sedang Dipinjam</p>
-        <p class="text-2xl font-bold text-warning-500 mt-1">{{ dataAnalytics?.borrowed }}</p>
+        <p class="text-lg sm:text-2xl font-bold text-warning-500 mt-1">{{ dataAnalytics?.borrowed }}</p>
       </div>
-      <div class="bg-white border border-slate-200 rounded-xl p-4">
+      <div class="bg-white border border-slate-200 rounded-xl p-3 sm:p-4">
         <p class="text-slate-600 text-sm">Terlambat</p>
-        <p class="text-2xl font-bold text-error-500 mt-1">{{ dataAnalytics?.late }}</p>
+        <p class="text-lg sm:text-2xl font-bold text-error-500 mt-1">{{ dataAnalytics?.late }}</p>
       </div>
-      <div class="bg-white border border-slate-200 rounded-xl p-4">
+      <div class="bg-white border border-slate-200 rounded-xl p-3 sm:p-4">
         <p class="text-slate-600 text-sm">Dikembalikan Hari Ini</p>
-        <p class="text-2xl font-bold text-success-500 mt-1">{{ dataAnalytics?.returned_today }}</p>
+        <p class="text-lg sm:text-2xl font-bold text-success-500 mt-1">{{ dataAnalytics?.returned_today }}</p>
       </div>
     </div>
 
-    <div class="flex gap-4 mb-6">
+    <div class="flex flex-wrap gap-2 sm:gap-4 mb-6">
       <button
         @click="statusActive = ''"
         :class="statusActive === '' ? 'bg-primary-500/10 text-primary-400' : ''"
-        class="px-6 py-3 text-slate-600 border border-primary-500/30 rounded-xl font-medium"
+        class="px-4 sm:px-6 py-2 sm:py-3 text-slate-600 border border-primary-500/30 rounded-xl font-medium text-sm sm:text-base"
       >
         Semua
       </button>
       <button
         @click="statusActive = 'borrowed'"
         :class="statusActive === 'borrowed' ? 'bg-primary-500/10 text-primary-400' : ''"
-        class="px-6 py-3 text-slate-600 border border-primary-500/30 rounded-xl font-medium"
+        class="px-4 sm:px-6 py-2 sm:py-3 text-slate-600 border border-primary-500/30 rounded-xl font-medium text-sm sm:text-base"
       >
         Dipinjam
       </button>
       <button
         @click="statusActive = 'returned'"
         :class="statusActive === 'returned' ? 'bg-primary-500/10 text-primary-400' : ''"
-        class="px-6 py-3 text-slate-600 border border-primary-500/30 rounded-xl font-medium"
+        class="px-4 sm:px-6 py-2 sm:py-3 text-slate-600 border border-primary-500/30 rounded-xl font-medium text-sm sm:text-base"
       >
         Dikembalikan
       </button>
     </div>
 
-    <div class="flex gap-4 mb-6">
+    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
       <div class="flex-1 relative">
         <svg
           class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600"
@@ -188,7 +188,8 @@ onMounted(() => {
     </div>
 
     <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-      <table class="w-full">
+      <div class="overflow-x-auto">
+      <table class="w-full min-w-[800px]">
         <thead class="bg-slate-50">
           <tr class="text-left text-slate-600 text-sm">
             <th class="px-6 py-4">ID</th>
@@ -285,19 +286,20 @@ onMounted(() => {
           </tr>
         </tbody>
       </table>
+      </div>
 
-      <div class="flex items-center justify-between px-6 py-4 border-t border-slate-200">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 sm:px-6 py-4 border-t border-slate-200 gap-3">
         <p class="text-sm text-slate-600">
           Halaman {{ pageActive }} dari {{ lastPage }}
           <span v-if="totalItems">({{ totalItems }} total buku)</span>
         </p>
 
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <button
             @click="changePage(pageActive - 1)"
             :disabled="pageActive === 1"
             :class="{ 'opacity-50 cursor-not-allowed': pageActive === 1 }"
-            class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+            class="px-3 sm:px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors text-sm"
           >
             Sebelumnya
           </button>
@@ -311,7 +313,7 @@ onMounted(() => {
                 ? 'bg-primary-500 text-slate-800'
                 : 'border border-slate-200 text-slate-600 hover:bg-slate-100',
             ]"
-            class="px-4 py-2 rounded-lg transition-colors"
+            class="px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm hidden sm:inline-flex"
           >
             {{ page }}
           </button>
@@ -320,7 +322,7 @@ onMounted(() => {
             @click="changePage(pageActive + 1)"
             :disabled="pageActive === lastPage"
             :class="{ 'opacity-50 cursor-not-allowed': pageActive === lastPage }"
-            class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+            class="px-3 sm:px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors text-sm"
           >
             Selanjutnya
           </button>
